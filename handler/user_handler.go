@@ -3,14 +3,20 @@ package handler
 import (
 	"fmt"
 	"net/http"
+
+	"github.com/uenoryo/chitoi/service"
 )
 
 // NewUserHandler is XXX
-func NewUserHandler() *UserHandler {
-	return &UserHandler{}
+func NewUserHandler(srv service.UserService) *UserHandler {
+	return &UserHandler{
+		Service: srv,
+	}
 }
 
-type UserHandler struct{}
+type UserHandler struct {
+	Service service.UserService
+}
 
 // NewUserServer is XXX
 func NewUserServer(h *UserHandler) *http.ServeMux {
