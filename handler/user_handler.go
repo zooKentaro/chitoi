@@ -1,7 +1,6 @@
 package handler
 
 import (
-	"fmt"
 	"net/http"
 
 	"github.com/uenoryo/chitoi/service"
@@ -28,5 +27,5 @@ func NewUserServer(h *UserHandler) *http.ServeMux {
 
 // SignupHandler is XXX
 func (h *UserHandler) SignupHandler(w http.ResponseWriter, r *http.Request) {
-	fmt.Fprintf(w, "user")
+	WriteError404(w)
 }
