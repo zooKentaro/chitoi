@@ -41,7 +41,7 @@ func (h *UserHandler) SignupHandler(w http.ResponseWriter, r *http.Request) {
 	res, err := service.Signup(req)
 	if err != nil {
 		log.Println(err.Error())
-		WriteError500(w, err.Error())
+		WriteError400or500(w, err)
 	}
 
 	if err = WriteJSON(w, res); err != nil {

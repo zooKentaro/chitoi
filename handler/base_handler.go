@@ -71,3 +71,12 @@ func WriteError400(w http.ResponseWriter, debugMsg string) error {
 func WriteError404(w http.ResponseWriter) error {
 	return WriteError(w, http.StatusNotFound, "ページが見つかりません", "ページが見つかりません")
 }
+
+// WriteError400or500 is XXX
+func WriteError400or500(w http.ResponseWriter, err error) error {
+	switch e := err.(type) {
+	case *data.ErrorBadRequest:
+		return WriteError400(w, e.Error())
+	}
+	return WriteError500(w, err.Error())
+}
