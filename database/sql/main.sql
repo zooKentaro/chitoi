@@ -6,6 +6,9 @@ CREATE TABLE `user` (
     `id` BIGINT unsigned NOT NULL,
     `name` VARCHAR(191) NOT NULL,
     `token` VARCHAR(191) NOT NULL,
+    `last_login_at` DATETIME NOT NULL,
+    `money` BIGINT unsigned NOT NULL,
+    `stamina` INTEGER unsigned NOT NULL,
     `created_at` DATETIME NOT NULL,
     `updated_at` DATETIME NOT NULL,
     PRIMARY KEY (`id`)

@@ -8,11 +8,14 @@ import (
 )
 
 type User struct {
-	Id        uint64
-	Name      string
-	Token     string
-	CreatedAt time.Time
-	UpdatedAt time.Time
+	Id          uint64
+	Name        string
+	Token       string
+	LastLoginAt time.Time
+	money       uint64
+	stamina     uint32
+	CreatedAt   time.Time
+	UpdatedAt   time.Time
 }
 
 func (u User) PrimaryKey() dialect.PrimaryKey {
