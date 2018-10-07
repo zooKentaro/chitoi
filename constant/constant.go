@@ -1,13 +1,18 @@
 package constant
 
 const (
+    // PlatformTypePC はプラットフォームが pc であることを表す
+    PlatformTypePC = 1
 
-	// PlatformTypePC は プラットフォームが pc であることを表す
-	PlatformTypePC = 1
+    // PlatformTypeIOS はプラットフォームが ios であることを表す
+    PlatformTypeIOS = 2
 
-	// PlatformTypeIOS は プラットフォームが ios であることを表す
-	PlatformTypeIOS = 2
+    // PlatformTypeAndroid はプラットフォームが android であることを表す
+    PlatformTypeAndroid = 3
 
-	// PlatformTypeAndroid は プラットフォームが android であることを表す
-	PlatformTypeAndroid = 3
+    // InitialStamina はユーザがサインナップした時のスタミナの初期値
+    DefaultStamina = 7
+
+    // InitialMoney はユーザがサインナップした時の所持金
+    DefaultMoney = 10
 )
