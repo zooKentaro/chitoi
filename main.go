@@ -1,23 +1,16 @@
 package main
 
 import (
-	"fmt"
 	"log"
 	"net/http"
-	"os"
 
-	"github.com/joho/godotenv"
 	"github.com/uenoryo/chitoi/api"
+	"github.com/uenoryo/chitoi/env"
 )
 
 func main() {
-	if os.Getenv("CHITOI_ENV") == "" {
-		os.Setenv("CHITOI_ENV", "development")
-	}
-
-	err := godotenv.Load(fmt.Sprintf(".env.%s", os.Getenv("CHITOI_ENV")))
-	if err != nil {
-		log.Fatal("Error loading .env file")
+	if err := env.Load(); err != nil {
+		log.Fatal("error load env, error: ", err.Error())
 		return
 	}
 
