@@ -6,3 +6,9 @@ docker-dev-start:
 
 docker-dev-stop:
 	docker-compose -f ./docker/dev/docker-compose.yml -p chitoi stop
+
+migration-force:
+	go run ./database/migration/main.go -deploy
+
+generate-schema:
+	go run ./database/ddlmaker/main.go
