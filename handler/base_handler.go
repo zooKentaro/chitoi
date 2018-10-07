@@ -5,11 +5,16 @@ import (
 	"io/ioutil"
 	"net/http"
 
+	"github.com/pkg/errors"
 	"github.com/uenoryo/chitoi/data"
 )
 
 // ScanRequest is XXX
 func ScanRequest(r *http.Request, req interface{}) error {
+	if r.Method != "POST" {
+		return errors.Errorf("%s request is not allowed", r.Method)
+	}
+
 	buf, err := ioutil.ReadAll(r.Body)
 	if err != nil {
 		return err

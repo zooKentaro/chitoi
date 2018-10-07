@@ -4,6 +4,7 @@ import (
 	"log"
 	"net/http"
 
+	"github.com/uenoryo/chitoi/data"
 	"github.com/uenoryo/chitoi/service"
 )
 
@@ -28,8 +29,16 @@ func NewUserServer(h *UserHandler) *http.ServeMux {
 
 // SignupHandler is XXX
 func (h *UserHandler) SignupHandler(w http.ResponseWriter, r *http.Request) {
+	req := &data.UserSignupRequest{}
+	err := ScanRequest(r, req)
+	if err != nil {
+		log.Println(err.Error())
+		WriteError400(w, err.Error())
+		return
+	}
+
 	service := service.NewUserService()
-	res, err := service.Signup()
+	res, err := service.Signup(req)
 	if err != nil {
 		log.Println(err.Error())
 		WriteError500(w, err.Error())

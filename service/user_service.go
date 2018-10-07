@@ -3,7 +3,7 @@ package service
 import "github.com/uenoryo/chitoi/data"
 
 type UserService interface {
-    Signup() (*data.UserSignupResponse, error)
+    Signup(*data.UserSignupRequest) (*data.UserSignupResponse, error)
 }
 
 type userService struct{}
@@ -14,6 +14,6 @@ func NewUserService() UserService {
 }
 
 // Signup is XXX
-func (u *userService) Signup() (*data.UserSignupResponse, error) {
+func (u *userService) Signup(*data.UserSignupRequest) (*data.UserSignupResponse, error) {
     return &data.UserSignupResponse{}, nil
 }
