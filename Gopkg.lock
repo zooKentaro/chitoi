@@ -8,10 +8,31 @@
   revision = "4748e29d5718c2df4028a6543edf86fd8cc0f881"
 
 [[projects]]
+  name = "github.com/deckarep/golang-set"
+  packages = ["."]
+  revision = "cbaa98ba5575e67703b32b4b19f73c91f3c4159e"
+  version = "v1.7.1"
+
+[[projects]]
+  name = "github.com/go-sql-driver/mysql"
+  packages = ["."]
+  revision = "d523deb1b23d913de5bdada721a6071e71283618"
+  version = "v1.4.0"
+
+[[projects]]
   branch = "master"
   name = "github.com/howeyc/gopass"
   packages = ["."]
   revision = "bf9dde6d0d2c004a008c27aaee91170c786f6db8"
+
+[[projects]]
+  branch = "master"
+  name = "github.com/jmoiron/sqlx"
+  packages = [
+    ".",
+    "reflectx"
+  ]
+  revision = "0dae4fefe7c0e190f7b5a78dac28a1c82cc8d849"
 
 [[projects]]
   name = "github.com/joho/godotenv"
@@ -79,6 +100,25 @@
 
 [[projects]]
   branch = "master"
+  name = "github.com/schemalex/git-schemalex"
+  packages = ["."]
+  revision = "b690b7f9e063aac60e6573f50adcd647f8b7d0c5"
+
+[[projects]]
+  name = "github.com/schemalex/schemalex"
+  packages = [
+    ".",
+    "diff",
+    "format",
+    "internal/errors",
+    "internal/util",
+    "model"
+  ]
+  revision = "4a05bb9d8ca9ef56ab4f2f4bf094f234c9094b6c"
+  version = "v0.0.8"
+
+[[projects]]
+  branch = "master"
   name = "github.com/serenize/snaker"
   packages = ["."]
   revision = "a683aaf2d516deecd70cad0c72e3ca773ecfcef0"
@@ -99,6 +139,12 @@
   revision = "4497e2df6f9e69048a54498c7affbbec3294ad47"
 
 [[projects]]
+  name = "google.golang.org/appengine"
+  packages = ["cloudsql"]
+  revision = "ae0ab99deb4dc413a2b4bd6c8bdd0eb67f1e4d06"
+  version = "v1.2.0"
+
+[[projects]]
   name = "gopkg.in/godo.v2"
   packages = [
     ".",
@@ -113,6 +159,6 @@
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "2b8668d9e4cfee2acffc05dbe9c42e7074d48ac8d1cfb594bc4f35a4395bb4b9"
+  inputs-digest = "4942e0f735f4485b557ffccb931c9e938f5f78e55d05c57aaf48b80a28d6b0db"
   solver-name = "gps-cdcl"
   solver-version = 1
