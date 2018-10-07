@@ -18,4 +18,6 @@ func (u *UserSignupRequest) Validate() error {
 }
 
 // UserSignupResponse is XXX
-type UserSignupResponse struct{}
+type UserSignupResponse struct {
+    Token string `json:"token"`
+}
