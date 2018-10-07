@@ -52,6 +52,16 @@ func WriteError(w http.ResponseWriter, code int, msg, debugMsg string) error {
 	})
 }
 
+// WriteError500 is XXX
+func WriteError500(w http.ResponseWriter, debugMsg string) error {
+	return WriteError(w, http.StatusInternalServerError, "エラーが発生しました", debugMsg)
+}
+
+// WriteError400 is XXX
+func WriteError400(w http.ResponseWriter, debugMsg string) error {
+	return WriteError(w, http.StatusBadRequest, "無効なリクエストです", debugMsg)
+}
+
 // WriteError404 is XXX
 func WriteError404(w http.ResponseWriter) error {
 	return WriteError(w, http.StatusNotFound, "ページが見つかりません", "ページが見つかりません")

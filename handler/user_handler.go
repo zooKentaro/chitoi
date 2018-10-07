@@ -1,6 +1,7 @@
 package handler
 
 import (
+	"log"
 	"net/http"
 
 	"github.com/uenoryo/chitoi/service"
@@ -27,5 +28,15 @@ func NewUserServer(h *UserHandler) *http.ServeMux {
 
 // SignupHandler is XXX
 func (h *UserHandler) SignupHandler(w http.ResponseWriter, r *http.Request) {
-	WriteError404(w)
+	service := service.NewUserService()
+	res, err := service.Signup()
+	if err != nil {
+		log.Println(err.Error())
+		WriteError500(w, err.Error())
+	}
+
+	if err = WriteJSON(w, res); err != nil {
+		log.Println(err.Error())
+	}
+	return
 }
