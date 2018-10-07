@@ -42,8 +42,7 @@ func (h *UserHandler) SignupHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	service := service.NewUserService()
-	res, err := service.Signup(req)
+	res, err := h.Service.Signup(req)
 	if err != nil {
 		log.Println(err.Error())
 		WriteError400or500(w, err)

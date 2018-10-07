@@ -1,12 +1,13 @@
 package core
 
 import (
+    "github.com/jmoiron/sqlx"
     "github.com/pkg/errors"
     "github.com/uenoryo/chitoi/database"
 )
 
 type Core struct {
-    db *sqlx.DB
+    DB *sqlx.DB
 }
 
 func New() (*Core, error) {
@@ -15,6 +16,6 @@ func New() (*Core, error) {
         return nil, errors.Wrap(err, "error connect database")
     }
     return &Core{
-        db: conn,
+        DB: conn,
     }, nil
 }

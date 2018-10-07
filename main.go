@@ -14,7 +14,11 @@ func main() {
 		return
 	}
 
-	server := api.NewServer()
+	server, err := api.NewServer()
+	if err != nil {
+		log.Fatal("error new server, error: ", err.Error())
+		return
+	}
 
 	srv := http.Server{
 		Addr:    ":8080",

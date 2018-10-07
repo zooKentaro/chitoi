@@ -1,20 +1,27 @@
 package api
 
 import (
-	"net/http"
+    "net/http"
 
-	"github.com/uenoryo/chitoi/handler"
-	"github.com/uenoryo/chitoi/service"
+    "github.com/pkg/errors"
+    "github.com/uenoryo/chitoi/core"
+    "github.com/uenoryo/chitoi/handler"
+    "github.com/uenoryo/chitoi/service"
 )
 
 // NewServer is XXX
-func NewServer() *http.ServeMux {
-	server := http.NewServeMux()
+func NewServer() (*http.ServeMux, error) {
+    server := http.NewServeMux()
 
-	userService := service.NewUserService()
-	userHandler := handler.NewUserServer(handler.NewUserHandler(userService))
+    core, err := core.New()
+    if err != nil {
+        return nil, errors.Wrap(err, "error new core")
+    }
 
-	server.Handle("/user/", userHandler)
+    userService := service.NewUserService(core)
+    userHandler := handler.NewUserServer(handler.NewUserHandler(userService))
 
-	return server
+    server.Handle("/user/", userHandler)
+
+    return server, nil
 }
