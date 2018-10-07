@@ -29,10 +29,10 @@ func ScanRequest(r *http.Request, req interface{}) error {
 }
 
 // WriteJSON is XXX
-func WriteJSON(w http.ResponseWriter, data interface{}) error {
+func WriteJSON(w http.ResponseWriter, res interface{}) error {
 	w.Header().Set("Content-Type", "application/json")
 
-	response, err := json.Marshal(data)
+	response, err := json.Marshal(res)
 	if err != nil {
 		return err
 	}
@@ -43,6 +43,18 @@ func WriteJSON(w http.ResponseWriter, data interface{}) error {
 	}
 
 	return nil
+}
+
+// WriteSuccess is XXX
+func WriteSuccess(w http.ResponseWriter, res interface{}) error {
+	w.WriteHeader(http.StatusOK)
+
+	return WriteJSON(w, data.BaseResponse{
+		Code:         http.StatusOK,
+		DebugMessage: "OK",
+		Message:      "",
+		Data:         res,
+	})
 }
 
 // WriteError is XXX
