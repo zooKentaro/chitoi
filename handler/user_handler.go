@@ -37,6 +37,11 @@ func (h *UserHandler) SignupHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	if err := req.Validate(); err != nil {
+		WriteError400(w, err.Error())
+		return
+	}
+
 	service := service.NewUserService()
 	res, err := service.Signup(req)
 	if err != nil {
