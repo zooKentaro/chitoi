@@ -8,12 +8,12 @@ import (
 )
 
 type User struct {
-	Id          uint64
+	Id          uint64 `ddl:"auto"`
 	Name        string
 	Token       string
 	LastLoginAt time.Time
-	money       uint64
-	stamina     uint32
+	money       uint64 `ddl:"default=0"`
+	stamina     uint32 `ddl:"default=0"`
 	CreatedAt   time.Time
 	UpdatedAt   time.Time
 }
