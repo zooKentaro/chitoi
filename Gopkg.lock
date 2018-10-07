@@ -99,6 +99,12 @@
   version = "v0.8.0"
 
 [[projects]]
+  name = "github.com/satori/go.uuid"
+  packages = ["."]
+  revision = "f58768cc1a7a7e77a3bd49e98cdd21419399b6a3"
+  version = "v1.2.0"
+
+[[projects]]
   branch = "master"
   name = "github.com/schemalex/git-schemalex"
   packages = ["."]
@@ -159,6 +165,6 @@
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "4942e0f735f4485b557ffccb931c9e938f5f78e55d05c57aaf48b80a28d6b0db"
+  inputs-digest = "8003d064b7eb1b35fb807f24f7e459522ea0339be70fd188a066f71d2705b91a"
   solver-name = "gps-cdcl"
   solver-version = 1
