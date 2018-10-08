@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"io/ioutil"
 	"net/http"
+	"os"
 
 	"github.com/pkg/errors"
 	"github.com/uenoryo/chitoi/data"
@@ -43,9 +44,17 @@ func WriteJSON(w http.ResponseWriter, res interface{}) error {
 	return nil
 }
 
+func WriteBaseHeader(w http.ResponseWriter) {
+	w.Header().Set("Content-Type", "application/json")
+
+	if os.Getenv("CHITOI_ENV") != "production" {
+		w.Header().Set("Access-Control-Allow-Origin", "*")
+	}
+}
+
 // WriteSuccess is XXX
 func WriteSuccess(w http.ResponseWriter, res interface{}) error {
-	w.Header().Set("Content-Type", "application/json")
+	WriteBaseHeader(w)
 	w.WriteHeader(http.StatusOK)
 
 	return WriteJSON(w, data.BaseResponse{
@@ -58,7 +67,7 @@ func WriteSuccess(w http.ResponseWriter, res interface{}) error {
 
 // WriteError is XXX
 func WriteError(w http.ResponseWriter, code int, msg, debugMsg string) error {
-	w.Header().Set("Content-Type", "application/json")
+	WriteBaseHeader(w)
 	w.WriteHeader(code)
 
 	return WriteJSON(w, data.BaseResponse{
