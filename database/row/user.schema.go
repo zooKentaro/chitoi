@@ -8,14 +8,14 @@ import (
 )
 
 type User struct {
-	Id          uint64 `ddl:"auto"`
-	Name        string
-	Token       string
-	LastLoginAt time.Time
-	money       uint64 `ddl:"default=0"`
-	stamina     uint32 `ddl:"default=0"`
-	CreatedAt   time.Time
-	UpdatedAt   time.Time
+	ID          uint64    `ddl:"auto" json:"id,string"`
+	Name        string    `json:"name"`
+	Token       string    `json:"token"`
+	LastLoginAt time.Time `json:"last_login_at"`
+	Money       uint64    `ddl:"default=0" json:"money"`
+	Stamina     uint32    `ddl:"default=0" json:"stamina"`
+	CreatedAt   time.Time `json:"created_at"`
+	UpdatedAt   time.Time `json:"updated_at"`
 }
 
 func (u User) PrimaryKey() dialect.PrimaryKey {
