@@ -3,6 +3,7 @@ package data
 import (
     "github.com/pkg/errors"
     "github.com/uenoryo/chitoi/constant"
+    "github.com/uenoryo/chitoi/database/row"
 )
 
 // UserSignupRequest is XXX
@@ -19,5 +20,5 @@ func (u *UserSignupRequest) Validate() error {
 
 // UserSignupResponse is XXX
 type UserSignupResponse struct {
-    Token string `json:"token"`
+    User *row.User `json:"user"`
 }
