@@ -1,6 +1,7 @@
 package model
 
 import (
+    "database/sql"
     "time"
 
     "github.com/pkg/errors"
@@ -36,4 +37,27 @@ func CreateNewUser(core *core.Core) (*row.User, error) {
     userRow.ID = uint64(id)
 
     return userRow, nil
+}
+
+type UserRepository struct {
+    core *core.Core
+}
+
+func NewUserRepository(core *core.Core) *UserRepository {
+    return &UserRepository{core: core}
+}
+
+type User struct {
+    Row *row.User
+}
+
+func (repo *UserRepository) FindByToken(token string) (*User, error) {
+    userRow := row.User{}
+    if err := repo.core.DB.Get(&userRow, "SELECT * FROM user WHERE token = ?", token); err != nil {
+        if err == sql.ErrNoRows {
+            return nil, errors.Wrap(err, "user is not found")
+        }
+        return nil, err
+    }
+    return &User{Row: &userRow}, nil
 }

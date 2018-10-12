@@ -9,6 +9,7 @@ import (
 
 type UserService interface {
     Signup(*data.UserSignupRequest) (*data.UserSignupResponse, error)
+    Login(*data.UserLoginRequest) (*data.UserLoginResponse, error)
 }
 
 type userService struct {
@@ -23,12 +24,23 @@ func NewUserService(core *core.Core) UserService {
 }
 
 // Signup is XXX
-func (u *userService) Signup(*data.UserSignupRequest) (*data.UserSignupResponse, error) {
+func (u *userService) Signup(req *data.UserSignupRequest) (*data.UserSignupResponse, error) {
     user, err := model.CreateNewUser(u.Core)
     if err != nil {
         return nil, errors.Wrap(err, "error create new user")
     }
     return &data.UserSignupResponse{
         User: user,
+    }, nil
+}
+
+// Login is XXX
+func (u *userService) Login(req *data.UserLoginRequest) (*data.UserLoginResponse, error) {
+    user, err := model.NewUserRepository(u.Core).FindByToken(req.Token)
+    if err != nil {
+        return nil, errors.Wrap(err, "find user by token")
+    }
+    return &data.UserLoginResponse{
+        User: user.Row,
     }, nil
 }
