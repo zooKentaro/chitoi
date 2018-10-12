@@ -40,7 +40,14 @@ func (u *userService) Login(req *data.UserLoginRequest) (*data.UserLoginResponse
     if err != nil {
         return nil, errors.Wrap(err, "find user by token")
     }
+
+    sessionID, err := user.Login()
+    if err != nil {
+        return nil, errors.Wrap(err, "error login")
+    }
+
     return &data.UserLoginResponse{
-        User: user.Row,
+        User:      user.Row,
+        SessionID: sessionID,
     }, nil
 }

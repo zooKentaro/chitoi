@@ -30,5 +30,6 @@ type UserLoginRequest struct {
 
 // UserLoginResponse is XXX
 type UserLoginResponse struct {
-    User *row.User `json:"user"`
+    User      *row.User `json:"user"`
+    SessionID string    `json:"session_id"`
 }
