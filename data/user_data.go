@@ -22,3 +22,13 @@ func (u *UserSignupRequest) Validate() error {
 type UserSignupResponse struct {
     User *row.User `json:"user"`
 }
+
+// UserLoginRequest is XXX
+type UserLoginRequest struct {
+    Token string `json:"token"`
+}
+
+// UserLoginResponse is XXX
+type UserLoginResponse struct {
+    User *row.User `json:"user"`
+}
