@@ -8,7 +8,7 @@ import (
 )
 
 type BusinessService interface {
-    List(*data.BusinessListRequest) (*data.BusinessListResponse, error)
+    List() (*data.BusinessListResponse, error)
 }
 
 type businessService struct {
@@ -23,7 +23,7 @@ func NewBusinessService(core *core.Core) BusinessService {
 }
 
 // List is XXX
-func (s *businessService) List(req *data.BusinessListRequest) (*data.BusinessListResponse, error) {
+func (s *businessService) List() (*data.BusinessListResponse, error) {
     businesses, err := model.NewBusinessRepository(s.Core).TodaysBusiness()
     if err != nil {
         return nil, errors.Wrap(err, "error today's business")

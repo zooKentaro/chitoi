@@ -4,7 +4,6 @@ import (
 	"log"
 	"net/http"
 
-	"github.com/uenoryo/chitoi/data"
 	"github.com/uenoryo/chitoi/service"
 )
 
@@ -29,15 +28,7 @@ func NewBusinessServer(h *BusinessHandler) *http.ServeMux {
 
 // ListHandler is XXX
 func (h *BusinessHandler) ListHandler(w http.ResponseWriter, r *http.Request) {
-	req := &data.BusinessListRequest{}
-	err := ScanRequest(r, req)
-	if err != nil {
-		log.Println(err.Error())
-		WriteError400(w, err.Error())
-		return
-	}
-
-	res, err := h.Service.List(req)
+	res, err := h.Service.List()
 	if err != nil {
 		log.Println(err.Error())
 		WriteError400or500(w, err)
