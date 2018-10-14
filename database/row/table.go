@@ -1,7 +1,8 @@
 package row
 
 func MainTableStructs() []interface{} {
-	return []interface{}{
-		&User{},
-	}
+    return []interface{}{
+        &User{},
+        &Business{},
+    }
 }
