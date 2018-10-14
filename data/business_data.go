@@ -8,3 +8,8 @@ import (
 type BusinessListResponse struct {
     Businesses []*row.Business `json:"businesses"`
 }
+
+// BusinessBuyRequest is XXX
+type BusinessBuyRequest struct {
+    BusinessID uint32 `json:"business_id"`
+}

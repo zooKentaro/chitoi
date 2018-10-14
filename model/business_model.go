@@ -22,6 +22,20 @@ func NewBusinessRepository(core *core.Core) *BusinessRepository {
     return &BusinessRepository{core: core}
 }
 
+func (repo *BusinessRepository) FindByID(id uint32) (*Business, error) {
+    businessRow := row.Business{}
+    if err := repo.core.DB.Get(&businessRow, "SELECT * FROM business WHERE id = ?", id); err != nil {
+        if err == sql.ErrNoRows {
+            return nil, errors.Wrap(err, "business is not found")
+        }
+        return nil, err
+    }
+    return &Business{
+        Row:  &businessRow,
+        core: repo.core,
+    }, nil
+}
+
 func (repo *BusinessRepository) TodaysBusiness() ([]*row.Business, error) {
     prefNum, err := repo.todaysPrefNum()
     if err != nil {
@@ -80,4 +94,35 @@ func (repo *BusinessRepository) todaysPrefNum() (uint32, error) {
     }
 
     return prefNum, nil
+}
+
+type Business struct {
+    Row  *row.Business
+    core *core.Core
+}
+
+func (b *Business) IsOpen() error {
+    pref, err := NewBusinessRepository(b.core).todaysPrefNum()
+    if err != nil {
+        return errors.Wrap(err, "error get today's pref num")
+    }
+    if b.Row.Prefecture != pref {
+        return errors.Errorf("error business id:%d is not open, current open prefecture:%d", b.Row.ID, pref)
+    }
+    return nil
+}
+
+func (b *Business) NextPrice(ub *row.UserBusiness) (uint64, error) {
+    if ub == nil {
+        return b.Row.PriceBase, nil
+    }
+    switch ub.Level {
+    case 1:
+        return b.Row.PriceBase, nil
+    case 2:
+        return b.Row.PriceLevel2, nil
+    case 3:
+        return b.Row.PriceLevel3, nil
+    }
+    return 0, errors.Errorf("error invalid business level:%d", ub.Level)
 }
