@@ -29,8 +29,15 @@ func (u *userService) Signup(req *data.UserSignupRequest) (*data.UserSignupRespo
     if err != nil {
         return nil, errors.Wrap(err, "error create new user")
     }
+
+    sessionID, err := user.Login()
+    if err != nil {
+        return nil, errors.Wrap(err, "error login")
+    }
+
     return &data.UserSignupResponse{
-        User: user,
+        User:      user.Row,
+        SessionID: sessionID,
     }, nil
 }
 

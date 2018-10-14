@@ -15,7 +15,7 @@ import (
 
 var sessionKeyPrefix = "CHITOI-LOGIN-SESSION"
 
-func CreateNewUser(core *core.Core) (*row.User, error) {
+func CreateNewUser(core *core.Core) (*User, error) {
     token := uuid.NewV4().String()
     now := time.Now()
 
@@ -39,7 +39,10 @@ func CreateNewUser(core *core.Core) (*row.User, error) {
     }
     userRow.ID = uint64(id)
 
-    return userRow, nil
+    return &User{
+        Row:  userRow,
+        core: core,
+    }, nil
 }
 
 type UserRepository struct {

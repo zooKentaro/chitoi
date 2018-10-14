@@ -20,7 +20,8 @@ func (u *UserSignupRequest) Validate() error {
 
 // UserSignupResponse is XXX
 type UserSignupResponse struct {
-    User *row.User `json:"user"`
+    User      *row.User `json:"user"`
+    SessionID string    `json:"session_id"`
 }
 
 // UserLoginRequest is XXX
