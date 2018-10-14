@@ -122,6 +122,10 @@ func (u *User) GameFinish(data *GameData) error {
 
     u.getMoney(data.Money)
 
+    if _, err := u.core.DB.Exec("SELECT * FROM user WHERE id = ? FOR UPDATE", u.Row.ID); err != nil {
+        return errors.Wrap(err, "error lock for update")
+    }
+
     if _, err := u.core.DB.Exec("UPDATE user SET stamina = ?, money = ? WHERE id = ?", u.Row.Stamina, u.Row.Money, u.Row.ID); err != nil {
         return errors.Wrap(err, "error update user data")
     }
