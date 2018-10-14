@@ -47,10 +47,12 @@ func (h *UserHandler) SignupHandler(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		log.Println(err.Error())
 		WriteError400or500(w, err)
+		return
 	}
 
 	if err = WriteSuccess(w, res); err != nil {
 		log.Println(err.Error())
+		return
 	}
 	return
 }
@@ -69,10 +71,12 @@ func (h *UserHandler) LoginHandler(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		log.Println(err.Error())
 		WriteError400or500(w, err)
+		return
 	}
 
 	if err = WriteSuccess(w, res); err != nil {
 		log.Println(err.Error())
+		return
 	}
 	return
 }
