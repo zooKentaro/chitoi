@@ -5,12 +5,15 @@ import (
     "fmt"
     "time"
 
+    "github.com/garyburd/redigo/redis"
     "github.com/pkg/errors"
     uuid "github.com/satori/go.uuid"
     "github.com/uenoryo/chitoi/constant"
     "github.com/uenoryo/chitoi/core"
     "github.com/uenoryo/chitoi/database/row"
 )
+
+var sessionKeyPrefix = "CHITOI-LOGIN-SESSION"
 
 func CreateNewUser(core *core.Core) (*row.User, error) {
     token := uuid.NewV4().String()
@@ -66,9 +69,33 @@ func (repo *UserRepository) FindByToken(token string) (*User, error) {
     }, nil
 }
 
+func (repo *UserRepository) FindByID(id uint64) (*User, error) {
+    userRow := row.User{}
+    if err := repo.core.DB.Get(&userRow, "SELECT * FROM user WHERE id = ?", id); err != nil {
+        if err == sql.ErrNoRows {
+            return nil, errors.Wrap(err, "user is not found")
+        }
+        return nil, err
+    }
+    return &User{
+        Row:  &userRow,
+        core: repo.core,
+    }, nil
+}
+
+func (repo *UserRepository) FindBySessionID(sessionID string) (*User, error) {
+    key := fmt.Sprintf("%s:%s", sessionKeyPrefix, sessionID)
+    userID, err := redis.Uint64(repo.core.Redis.Do("GET", key))
+    if err != nil {
+        return nil, errors.Wrap(err, "error get user id by session id")
+    }
+
+    return repo.FindByID(userID)
+}
+
 func (u *User) Login() (string, error) {
     sessionID := uuid.NewV4().String()
-    key := fmt.Sprintf("CHITOI-LOGIN-SESSION:%s", sessionID)
+    key := fmt.Sprintf("%s:%s", sessionKeyPrefix, sessionID)
     if _, err := u.core.Redis.Do("SET", key, u.Row.ID); err != nil {
         return "", errors.Wrap(err, "error set session")
     }
