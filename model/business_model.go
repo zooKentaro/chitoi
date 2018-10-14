@@ -2,9 +2,13 @@ package model
 
 import (
     "database/sql"
+    "fmt"
     "math/rand"
+    "strconv"
+    "strings"
     "time"
 
+    "github.com/garyburd/redigo/redis"
     "github.com/pkg/errors"
     "github.com/uenoryo/chitoi/core"
     "github.com/uenoryo/chitoi/database/row"
@@ -36,8 +40,44 @@ func (repo *BusinessRepository) TodaysBusiness() ([]*row.Business, error) {
 
 // todaysPrefNum は今日の都道府県番号を返す (日替わりのランダム)
 func (repo *BusinessRepository) todaysPrefNum() (uint32, error) {
-    rand.Seed(time.Now().UnixNano())
-    num := uint32(rand.Intn(8) + 40) // TODO: 現状は40 ~ 47 まで。マスターが入ったら 1 ~ 47にする
+    key := "CHITOI-BUSINESS-LIST"
+    exists := true
+    dateAndNum, err := redis.String(repo.core.Redis.Do("GET", key))
+    if err != nil {
+        if err == redis.ErrNil {
+            exists = false
+        } else {
+            return 0, errors.Wrap(err, "error get user id by session id")
+        }
+    }
 
-    return num, nil
+    isOld := false
+    prefNum := uint32(0)
+    nowStr := time.Now().Format("2006-01-02")
+    if exists {
+        sp := strings.Split(dateAndNum, "_")
+        if len(sp) < 2 {
+            return 0, errors.Errorf("error get invalid date and pref num data %s", dateAndNum)
+        }
+        dateStr := sp[0]
+        n, err := strconv.Atoi(sp[1])
+        if err != nil {
+            return 0, errors.Wrap(err, "error parse int")
+        }
+        prefNum = uint32(n)
+        if dateStr != nowStr {
+            isOld = true
+        }
+    }
+
+    if !exists || isOld {
+        rand.Seed(time.Now().UnixNano())
+        prefNum = uint32(rand.Intn(8) + 40) // TODO: 現状は40 ~ 47 まで。マスターが入ったら 1 ~ 47にする
+
+        if _, err := repo.core.Redis.Do("SET", key, fmt.Sprintf("%s_%d", nowStr, prefNum)); err != nil {
+            return 0, errors.Wrap(err, "error set datetime and prefecture num")
+        }
+    }
+
+    return prefNum, nil
 }
