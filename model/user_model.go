@@ -22,11 +22,10 @@ func CreateNewUser(core *core.Core) (*row.User, error) {
         Money:       constant.DefaultMoney,
         Stamina:     constant.DefaultStamina,
         CreatedAt:   now,
-        UpdatedAt:   now,
     }
 
-    q := "INSERT INTO `user` (`name`, `token`, `last_login_at`, `money`, `stamina`, `created_at`, `updated_at`) VALUES (?,?,?,?,?,?,?)"
-    res, err := core.DB.Exec(q, "", token, now, userRow.Money, userRow.Stamina, now, now)
+    q := "INSERT INTO `user` (`name`, `token`, `last_login_at`, `money`, `stamina`, `created_at`) VALUES (?,?,?,?,?,?,?)"
+    res, err := core.DB.Exec(q, "", token, now, userRow.Money, userRow.Stamina, now)
     if err != nil {
         return nil, errors.Wrap(err, "error create user")
     }
@@ -81,4 +80,39 @@ func (u *User) Login() (string, error) {
     }
 
     return sessionID, nil
+}
+
+// GameData は1ゲームのデータを扱う
+type GameData struct {
+    Money uint64
+}
+
+// GameFinish は1ゲーム終了時の動作を行う
+func (u *User) GameFinish(data *GameData) error {
+    if err := u.exhaustStamina(); err != nil {
+        return errors.Wrap(err, "error exhaust stamina")
+    }
+
+    u.getMoney(data.Money)
+
+    if _, err := u.core.DB.Exec("UPDATE user SET stamina = ?, money = ?", u.Row.Stamina, u.Row.Money); err != nil {
+        return errors.Wrap(err, "error update user data")
+    }
+
+    return nil
+}
+
+// exhaustStamina はスタミナを1つ消費する
+func (u *User) exhaustStamina() error {
+    if u.Row.Stamina == 0 {
+        return errors.New("stamina is 0")
+    }
+
+    u.Row.Stamina--
+    return nil
+}
+
+// getMoney はお金を取得する
+func (u *User) getMoney(amount uint64) {
+    u.Row.Money += amount
 }
