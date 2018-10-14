@@ -10,6 +10,7 @@ import (
 type UserService interface {
     Signup(*data.UserSignupRequest) (*data.UserSignupResponse, error)
     Login(*data.UserLoginRequest) (*data.UserLoginResponse, error)
+    Info(*data.UserInfoRequest) (*data.UserInfoResponse, error)
 }
 
 type userService struct {
@@ -56,5 +57,17 @@ func (u *userService) Login(req *data.UserLoginRequest) (*data.UserLoginResponse
     return &data.UserLoginResponse{
         User:      user.Row,
         SessionID: sessionID,
+    }, nil
+}
+
+// Info is XXX
+func (u *userService) Info(req *data.UserInfoRequest) (*data.UserInfoResponse, error) {
+    user, err := NewAuthService(u.Core).Authenticate(req.SessionID)
+    if err != nil {
+        return nil, errors.Wrap(err, "error authenticate user")
+    }
+
+    return &data.UserInfoResponse{
+        User: user.Row,
     }, nil
 }

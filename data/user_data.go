@@ -34,3 +34,13 @@ type UserLoginResponse struct {
     User      *row.User `json:"user"`
     SessionID string    `json:"session_id"`
 }
+
+// UserInfoRequest is XXX
+type UserInfoRequest struct {
+    SessionID string `json:"session_id"`
+}
+
+// UserInfoResponse is XXX
+type UserInfoResponse struct {
+    User *row.User `json:"user"`
+}

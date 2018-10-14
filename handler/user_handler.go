@@ -24,6 +24,7 @@ func NewUserServer(h *UserHandler) *http.ServeMux {
 	server := http.NewServeMux()
 	server.HandleFunc("/user/signup", h.SignupHandler)
 	server.HandleFunc("/user/login", h.LoginHandler)
+	server.HandleFunc("/user/info", h.InfoHandler)
 
 	return server
 }
@@ -68,6 +69,30 @@ func (h *UserHandler) LoginHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	res, err := h.Service.Login(req)
+	if err != nil {
+		log.Println(err.Error())
+		WriteError400or500(w, err)
+		return
+	}
+
+	if err = WriteSuccess(w, res); err != nil {
+		log.Println(err.Error())
+		return
+	}
+	return
+}
+
+// InfoHandler is XXX
+func (h *UserHandler) InfoHandler(w http.ResponseWriter, r *http.Request) {
+	req := &data.UserInfoRequest{}
+	err := ScanRequest(r, req)
+	if err != nil {
+		log.Println(err.Error())
+		WriteError400(w, err.Error())
+		return
+	}
+
+	res, err := h.Service.Info(req)
 	if err != nil {
 		log.Println(err.Error())
 		WriteError400or500(w, err)
