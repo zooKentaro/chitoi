@@ -14,6 +14,19 @@ CREATE TABLE `user` (
 ) ENGINE=InnoDB DEFAULT CHARACTER SET utf8mb4;
 
 
+DROP TABLE IF EXISTS `user_business`;
+
+CREATE TABLE `user_business` (
+    `id` BIGINT unsigned NOT NULL,
+    `user_id` BIGINT unsigned NOT NULL,
+    `business_id` BIGINT unsigned NOT NULL,
+    `level` INTEGER unsigned NOT NULL,
+    `last_buy_at` DATETIME NOT NULL,
+    UNIQUE `user_business_idx` (`user_id`, `business_id`),
+    PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARACTER SET utf8mb4;
+
+
 DROP TABLE IF EXISTS `business`;
 
 CREATE TABLE `business` (
