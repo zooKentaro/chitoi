@@ -10,7 +10,6 @@ CREATE TABLE `user` (
     `money` BIGINT unsigned NOT NULL DEFAULT 0,
     `stamina` INTEGER unsigned NOT NULL DEFAULT 0,
     `created_at` DATETIME NOT NULL,
-    `updated_at` DATETIME NOT NULL,
     PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARACTER SET utf8mb4;
 
