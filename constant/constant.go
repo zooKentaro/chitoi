@@ -15,4 +15,7 @@ const (
 
     // InitialMoney はユーザがサインナップした時の所持金
     DefaultMoney = 10
+
+    // MaxBusinessLevel は Business の最大レベル
+    MaxBusinessLevel = 3
 )
