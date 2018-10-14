@@ -21,7 +21,11 @@ func NewServer() (*http.ServeMux, error) {
     userService := service.NewUserService(core)
     userHandler := handler.NewUserServer(handler.NewUserHandler(userService))
 
+    gameService := service.NewGameService(core)
+    gameHandler := handler.NewGameServer(handler.NewGameHandler(gameService))
+
     server.Handle("/user/", userHandler)
+    server.Handle("/game/", gameHandler)
 
     return server, nil
 }
