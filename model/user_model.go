@@ -203,11 +203,7 @@ func (u *User) getOrLoseMoney(amount int64) {
 
 // spendMoney はお金を消費する
 func (u *User) spendMoney(amount uint64) {
-    if u.Row.Money < int64(amount) {
-        u.Row.Money = 0
-    } else {
-        u.Row.Money -= int64(amount)
-    }
+    u.Row.Money -= int64(amount)
 }
 
 // canBuy は購入可能な情状態かどうか以下のチェックを行います
