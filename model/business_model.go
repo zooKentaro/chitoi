@@ -117,12 +117,14 @@ func (b *Business) NextPrice(ub *row.UserBusiness) (uint64, error) {
         return b.Row.PriceBase, nil
     }
     switch ub.Level {
-    case 1:
+    case 0:
         return b.Row.PriceBase, nil
-    case 2:
+    case 1:
         return b.Row.PriceLevel2, nil
-    case 3:
+    case 2:
         return b.Row.PriceLevel3, nil
+    case 3:
+        return 0, nil
     }
     return 0, errors.Errorf("error invalid business level:%d", ub.Level)
 }
