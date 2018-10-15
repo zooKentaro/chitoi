@@ -55,8 +55,9 @@ func (u *userService) Login(req *data.UserLoginRequest) (*data.UserLoginResponse
     }
 
     return &data.UserLoginResponse{
-        User:      user.Row,
-        SessionID: sessionID,
+        User:       user.Row,
+        SessionID:  sessionID,
+        Businesses: u.Core.Masterdata.Businesses,
     }, nil
 }
 

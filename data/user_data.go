@@ -31,8 +31,9 @@ type UserLoginRequest struct {
 
 // UserLoginResponse is XXX
 type UserLoginResponse struct {
-    User      *row.User `json:"user"`
-    SessionID string    `json:"session_id"`
+    User       *row.User       `json:"user"`
+    SessionID  string          `json:"session_id"`
+    Businesses []*row.Business `json:"businesses"`
 }
 
 // UserInfoRequest is XXX
