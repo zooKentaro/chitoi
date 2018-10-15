@@ -17,7 +17,7 @@ CREATE TABLE `user` (
 DROP TABLE IF EXISTS `user_business`;
 
 CREATE TABLE `user_business` (
-    `id` BIGINT unsigned NOT NULL,
+    `id` BIGINT unsigned NOT NULL AUTO_INCREMENT,
     `user_id` BIGINT unsigned NOT NULL,
     `business_id` BIGINT unsigned NOT NULL,
     `level` INTEGER unsigned NOT NULL,

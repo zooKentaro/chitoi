@@ -8,7 +8,7 @@ import (
 )
 
 type UserBusiness struct {
-    ID         uint64    `json:"id"`
+    ID         uint64    `ddl:"auto" json:"id,string"`
     UserID     uint64    `db:"user_id" json:"user_id"`
     BusinessID uint64    `db:"business_id" json:"business_id"`
     Level      uint32    `db:"level" json:"level"`
