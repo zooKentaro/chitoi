@@ -7,7 +7,7 @@ CREATE TABLE `user` (
     `name` VARCHAR(191) NOT NULL,
     `token` VARCHAR(191) NOT NULL,
     `last_login_at` DATETIME NOT NULL,
-    `money` BIGINT unsigned NOT NULL DEFAULT 0,
+    `money` BIGINT NOT NULL DEFAULT 0,
     `stamina` INTEGER unsigned NOT NULL DEFAULT 0,
     `created_at` DATETIME NOT NULL,
     PRIMARY KEY (`id`)
