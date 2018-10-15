@@ -4,6 +4,7 @@ import (
 	"log"
 	"net/http"
 
+	"github.com/uenoryo/chitoi/data"
 	"github.com/uenoryo/chitoi/service"
 )
 
@@ -22,6 +23,7 @@ type BusinessHandler struct {
 func NewBusinessServer(h *BusinessHandler) *http.ServeMux {
 	server := http.NewServeMux()
 	server.HandleFunc("/business/list", h.ListHandler)
+	server.HandleFunc("/business/buy", h.BuyHandler)
 
 	return server
 }
@@ -29,6 +31,30 @@ func NewBusinessServer(h *BusinessHandler) *http.ServeMux {
 // ListHandler is XXX
 func (h *BusinessHandler) ListHandler(w http.ResponseWriter, r *http.Request) {
 	res, err := h.Service.List()
+	if err != nil {
+		log.Println(err.Error())
+		WriteError400or500(w, err)
+		return
+	}
+
+	if err = WriteSuccess(w, res); err != nil {
+		log.Println(err.Error())
+		return
+	}
+	return
+}
+
+// BuyHandler is XXX
+func (h *BusinessHandler) BuyHandler(w http.ResponseWriter, r *http.Request) {
+	req := &data.BusinessBuyRequest{}
+	err := ScanRequest(r, req)
+	if err != nil {
+		log.Println(err.Error())
+		WriteError400(w, err.Error())
+		return
+	}
+
+	res, err := h.Service.Buy(req)
 	if err != nil {
 		log.Println(err.Error())
 		WriteError400or500(w, err)

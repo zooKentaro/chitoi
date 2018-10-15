@@ -44,7 +44,7 @@ func (s *businessService) Buy(req *data.BusinessBuyRequest) (*data.BusinessBuyRe
 
     business, err := model.NewBusinessRepository(s.Core).FindByID(req.BusinessID)
     if err != nil {
-        return nil, errors.Wrapf(err, "error find business by id %s", req.BusinessID)
+        return nil, errors.Wrapf(err, "error find business by id %d", req.BusinessID)
     }
 
     if err := user.BusinessBuy(business); err != nil {
