@@ -115,7 +115,7 @@ func (u *User) Login() (string, error) {
 
 // GameData は1ゲームのデータを扱う
 type GameData struct {
-    Money uint64
+    Money int64
 }
 
 // GameFinish は1ゲーム終了時の動作を行う
@@ -124,7 +124,7 @@ func (u *User) GameFinish(data *GameData) error {
         return errors.Wrap(err, "error exhaust stamina")
     }
 
-    u.getMoney(data.Money)
+    u.getOrLoseMoney(data.Money)
 
     if _, err := u.core.DB.Exec("SELECT * FROM user WHERE id = ? FOR UPDATE", u.Row.ID); err != nil {
         return errors.Wrap(err, "error lock for update")
@@ -196,17 +196,17 @@ func (u *User) exhaustStamina() error {
     return nil
 }
 
-// getMoney はお金を取得する
-func (u *User) getMoney(amount uint64) {
+// getOrLoseMoney はお金を取得(消費)する
+func (u *User) getOrLoseMoney(amount int64) {
     u.Row.Money += amount
 }
 
 // spendMoney はお金を消費する
 func (u *User) spendMoney(amount uint64) {
-    if u.Row.Money < amount {
+    if u.Row.Money < int64(amount) {
         u.Row.Money = 0
     } else {
-        u.Row.Money -= amount
+        u.Row.Money -= int64(amount)
     }
 }
 
@@ -229,7 +229,7 @@ func (u *User) canBuy(ub *row.UserBusiness, business *Business) error {
         return errors.Wrap(err, "error next price")
     }
 
-    if u.Row.Money < nextPrice {
+    if u.Row.Money < int64(nextPrice) {
         return errors.Errorf("error money is not enough, want %d but current %d", nextPrice, u.Row.Money)
     }
 
