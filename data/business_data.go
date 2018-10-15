@@ -11,5 +11,9 @@ type BusinessListResponse struct {
 
 // BusinessBuyRequest is XXX
 type BusinessBuyRequest struct {
+    SessionID  string `json:"session_id"`
     BusinessID uint32 `json:"business_id"`
 }
+
+// BusinessBuyResponse is XXX
+type BusinessBuyResponse struct{}

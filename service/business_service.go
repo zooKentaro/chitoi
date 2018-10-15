@@ -9,6 +9,7 @@ import (
 
 type BusinessService interface {
     List() (*data.BusinessListResponse, error)
+    Buy(*data.BusinessBuyRequest) (*data.BusinessBuyResponse, error)
 }
 
 type businessService struct {
@@ -32,4 +33,23 @@ func (s *businessService) List() (*data.BusinessListResponse, error) {
     return &data.BusinessListResponse{
         Businesses: businesses,
     }, nil
+}
+
+// Buy is XXX
+func (s *businessService) Buy(req *data.BusinessBuyRequest) (*data.BusinessBuyResponse, error) {
+    user, err := NewAuthService(s.Core).Authenticate(req.SessionID)
+    if err != nil {
+        return nil, errors.Wrap(err, "error authenticate user")
+    }
+
+    business, err := model.NewBusinessRepository(s.Core).FindByID(req.BusinessID)
+    if err != nil {
+        return nil, errors.Wrapf(err, "error find business by id %s", req.BusinessID)
+    }
+
+    if err := user.BusinessBuy(business); err != nil {
+        return nil, errors.Wrap(err, "error buy business")
+    }
+
+    return &data.BusinessBuyResponse{}, nil
 }
