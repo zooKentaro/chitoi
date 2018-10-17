@@ -183,8 +183,8 @@ func (u *User) BusinessBuy(business *Business) error {
     }
 
     if exists {
-        q := "UPDATE user_business SET level = ? WHERE user_id = ? AND business_id = ?"
-        if _, err := u.core.DB.Exec(q, ubRow.Level+1, u.Row.ID, business.Row.ID); err != nil {
+        q := "UPDATE user_business SET level = ?, last_buy_at = ? WHERE user_id = ? AND business_id = ?"
+        if _, err := u.core.DB.Exec(q, ubRow.Level+1, time.Now(), u.Row.ID, business.Row.ID); err != nil {
             return errors.Wrap(err, "error update user data")
         }
     } else {
