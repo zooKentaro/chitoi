@@ -46,7 +46,12 @@ func (u *userService) Signup(req *data.UserSignupRequest) (*data.UserSignupRespo
 func (u *userService) Login(req *data.UserLoginRequest) (*data.UserLoginResponse, error) {
     user, err := model.NewUserRepository(u.Core).FindByToken(req.Token)
     if err != nil {
-        return nil, errors.Wrap(err, "find user by token")
+        return nil, errors.Wrap(err, "error find user by token")
+    }
+
+    ubRows, err := user.BusinessList()
+    if err != nil {
+        return nil, errors.Wrap(err, "error user business list")
     }
 
     sessionID, err := user.Login()
@@ -55,9 +60,10 @@ func (u *userService) Login(req *data.UserLoginRequest) (*data.UserLoginResponse
     }
 
     return &data.UserLoginResponse{
-        User:       user.Row,
-        SessionID:  sessionID,
-        Businesses: u.Core.Masterdata.Businesses,
+        User:           user.Row,
+        SessionID:      sessionID,
+        UserBusinesses: ubRows,
+        Businesses:     u.Core.Masterdata.Businesses,
     }, nil
 }
 

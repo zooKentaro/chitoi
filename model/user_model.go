@@ -137,6 +137,17 @@ func (u *User) GameFinish(data *GameData) error {
     return nil
 }
 
+func (u *User) BusinessList() ([]*row.UserBusiness, error) {
+    ubRows := []*row.UserBusiness{}
+    if err := u.core.DB.Select(&ubRows, "SELECT * FROM user_business WHERE user_id = ?", u.Row.ID); err != nil {
+        if err != sql.ErrNoRows {
+            return nil, errors.Wrap(err, "error find user business")
+        }
+    }
+
+    return ubRows, nil
+}
+
 func (u *User) BusinessBuy(business *Business) error {
     if err := business.IsOpen(); err != nil {
         return errors.Wrap(err, "error business is open")
