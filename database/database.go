@@ -12,7 +12,7 @@ func Connect() (*sqlx.DB, error) {
 	return sqlx.Connect(
 		"mysql",
 		fmt.Sprintf(
-			"%s:%s@tcp(%s:%s)/%s?parseTime=true",
+			"%s:%s@tcp(%s:%s)/%s?parseTime=true&loc=Asia%%2FTokyo",
 			os.Getenv("CHITOI_DB_USER"),
 			os.Getenv("CHITOI_DB_PASS"),
 			os.Getenv("CHITOI_DB_HOST"),
