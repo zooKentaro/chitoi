@@ -44,5 +44,6 @@ type UserInfoRequest struct {
 
 // UserInfoResponse is XXX
 type UserInfoResponse struct {
-    User *row.User `json:"user"`
+    User           *row.User           `json:"user"`
+    UserBusinesses []*row.UserBusiness `json:"user_businesses"`
 }

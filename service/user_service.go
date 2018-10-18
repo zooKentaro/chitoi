@@ -74,7 +74,13 @@ func (u *userService) Info(req *data.UserInfoRequest) (*data.UserInfoResponse, e
         return nil, errors.Wrap(err, "error authenticate user")
     }
 
+    ubRows, err := user.BusinessList()
+    if err != nil {
+        return nil, errors.Wrap(err, "error user business list")
+    }
+
     return &data.UserInfoResponse{
-        User: user.Row,
+        User:           user.Row,
+        UserBusinesses: ubRows,
     }, nil
 }
