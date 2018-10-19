@@ -51,5 +51,9 @@ func (s *businessService) Buy(req *data.BusinessBuyRequest) (*data.BusinessBuyRe
         return nil, errors.Wrap(err, "error buy business")
     }
 
+    if _, err := user.RankupMaybe(); err != nil {
+        return nil, errors.Wrap(err, "error runkup maybe")
+    }
+
     return &data.BusinessBuyResponse{}, nil
 }

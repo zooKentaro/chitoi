@@ -198,8 +198,28 @@ func (u *User) BusinessBuy(business *Business) error {
 }
 
 // RankupMaybe は現在の資産に応じてランクを上げる
-func (u *User) RankupMaybe() error {
-    return nil
+func (u *User) RankupMaybe() (bool, error) {
+    assets, err := u.Assets()
+    if err != nil {
+        return false, errors.Wrap(err, "error assets")
+    }
+
+    rank := uint32(1)
+    for _, ur := range u.core.Masterdata.UserRanks {
+        if assets < ur.Assets {
+            break
+        }
+        rank = ur.Rank
+    }
+
+    if rank <= u.Row.Rank {
+        return false, nil
+    }
+
+    if _, err := u.core.DB.Exec("UPDATE user SET rank = ? WHERE id = ?", rank, u.Row.ID); err != nil {
+        return false, errors.Wrap(err, "error update user")
+    }
+    return true, nil
 }
 
 // exhaustStamina はスタミナを1つ消費する

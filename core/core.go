@@ -19,6 +19,7 @@ type Core struct {
 
 type Masterdata struct {
     Businesses []*row.Business
+    UserRanks  []*row.UserRank
 }
 
 func New() (*Core, error) {
@@ -46,6 +47,14 @@ func (core *Core) LoadMasterdata() error {
         }
     }
 
+    userRanks := []*row.UserRank{}
+    if err := core.DB.Select(&userRanks, "SELECT * FROM user_rank"); err != nil {
+        if err != sql.ErrNoRows {
+            return errors.Wrap(err, "error select all user_rank")
+        }
+    }
+
     core.Masterdata.Businesses = businesses
+    core.Masterdata.UserRanks = userRanks
     return nil
 }
