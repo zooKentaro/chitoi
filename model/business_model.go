@@ -9,6 +9,7 @@ import (
     "time"
 
     "github.com/garyburd/redigo/redis"
+    "github.com/jmoiron/sqlx"
     "github.com/pkg/errors"
     "github.com/uenoryo/chitoi/core"
     "github.com/uenoryo/chitoi/database/row"
@@ -34,6 +35,28 @@ func (repo *BusinessRepository) FindByID(id uint32) (*Business, error) {
         Row:  &businessRow,
         core: repo.core,
     }, nil
+}
+
+func (repo *BusinessRepository) SelectByIDs(ids []uint32) ([]*Business, error) {
+    businessRows := []*row.Business{}
+    q, vs, err := sqlx.In("SELECT * FROM business WHERE id IN (?)", ids)
+    if err != nil {
+        return nil, errors.Wrap(err, "error sqlx in")
+    }
+    if err := repo.core.DB.Select(&businessRows, q, vs); err != nil {
+        if err != sql.ErrNoRows {
+            return nil, err
+        }
+    }
+
+    bs := make([]*Business, len(businessRows))
+    for i, row := range businessRows {
+        bs[i] = &Business{
+            core: repo.core,
+            Row:  row,
+        }
+    }
+    return bs, nil
 }
 
 func (repo *BusinessRepository) TodaysBusiness() ([]*row.Business, error) {
