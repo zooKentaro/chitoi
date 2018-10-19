@@ -135,6 +135,23 @@ func (b *Business) IsOpen() error {
     return nil
 }
 
+func (b *Business) Price(ub *row.UserBusiness) (uint64, error) {
+    if ub == nil {
+        return b.Row.PriceBase, nil
+    }
+    switch ub.Level {
+    case 0:
+        return b.Row.PriceBase, nil
+    case 1:
+        return b.Row.PriceBase, nil
+    case 2:
+        return b.Row.PriceLevel2, nil
+    case 3:
+        return b.Row.PriceLevel3, nil
+    }
+    return 0, errors.Errorf("error invalid business level:%d", ub.Level)
+}
+
 func (b *Business) NextPrice(ub *row.UserBusiness) (uint64, error) {
     if ub == nil {
         return b.Row.PriceBase, nil

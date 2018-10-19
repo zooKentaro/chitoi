@@ -197,6 +197,11 @@ func (u *User) BusinessBuy(business *Business) error {
     return nil
 }
 
+// RankupMaybe は現在の資産に応じてランクを上げる
+func (u *User) RankupMaybe() error {
+    return nil
+}
+
 // exhaustStamina はスタミナを1つ消費する
 func (u *User) exhaustStamina() error {
     if u.Row.Stamina == 0 {
@@ -205,6 +210,34 @@ func (u *User) exhaustStamina() error {
 
     u.Row.Stamina--
     return nil
+}
+
+// Assets は User の総資産額を返す
+func (u *User) Assets() (uint64, error) {
+    userBusinesses, err := NewUserBusinessRepository(u.core).SelectByUserID(u.Row.ID)
+    if err != nil {
+        return 0, errors.Wrap(err, "error select user business by user id")
+    }
+    ubs := UserBusinesses(userBusinesses)
+
+    businesses, err := ubs.Businesses()
+    if err != nil {
+        return 0, errors.Wrap(err, "error businesses")
+    }
+    businessByID := make(map[uint32]*Business, len(businesses))
+    for _, b := range businesses {
+        businessByID[b.Row.ID] = b
+    }
+
+    assets := uint64(0)
+    for _, ub := range userBusinesses {
+        price, err := businessByID[ub.Row.BusinessID].Price(ub.Row)
+        if err != nil {
+            return 0, errors.Wrap(err, "error price")
+        }
+        assets += price
+    }
+    return assets, nil
 }
 
 // getOrLoseMoney はお金を取得(消費)する
