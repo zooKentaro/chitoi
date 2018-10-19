@@ -12,6 +12,7 @@ type User struct {
 	Name        string    `json:"name"`
 	Token       string    `json:"token"`
 	LastLoginAt time.Time `db:"last_login_at" json:"last_login_at"`
+	Rank        uint32    `ddl:"default=1" json:"rank"`
 	Money       int64     `ddl:"default=0" json:"money"`
 	Stamina     uint32    `ddl:"default=0" json:"stamina"`
 	CreatedAt   time.Time `db:"created_at" json:"created_at"`

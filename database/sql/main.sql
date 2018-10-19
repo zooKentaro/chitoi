@@ -7,6 +7,7 @@ CREATE TABLE `user` (
     `name` VARCHAR(191) NOT NULL,
     `token` VARCHAR(191) NOT NULL,
     `last_login_at` DATETIME NOT NULL,
+    `rank` INTEGER unsigned NOT NULL DEFAULT 1,
     `money` BIGINT NOT NULL DEFAULT 0,
     `stamina` INTEGER unsigned NOT NULL DEFAULT 0,
     `created_at` DATETIME NOT NULL,
@@ -23,6 +24,16 @@ CREATE TABLE `user_business` (
     `level` INTEGER unsigned NOT NULL,
     `last_buy_at` DATETIME NOT NULL,
     UNIQUE `user_business_idx` (`user_id`, `business_id`),
+    PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARACTER SET utf8mb4;
+
+
+DROP TABLE IF EXISTS `user_rank`;
+
+CREATE TABLE `user_rank` (
+    `id` INTEGER unsigned NOT NULL AUTO_INCREMENT,
+    `rank` INTEGER unsigned NOT NULL,
+    `assets` BIGINT unsigned NOT NULL,
     PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARACTER SET utf8mb4;
 
