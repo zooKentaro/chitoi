@@ -20,7 +20,7 @@ DROP TABLE IF EXISTS `user_business`;
 CREATE TABLE `user_business` (
     `id` BIGINT unsigned NOT NULL AUTO_INCREMENT,
     `user_id` BIGINT unsigned NOT NULL,
-    `business_id` BIGINT unsigned NOT NULL,
+    `business_id` INTEGER unsigned NOT NULL,
     `level` INTEGER unsigned NOT NULL,
     `last_buy_at` DATETIME NOT NULL,
     UNIQUE `user_business_idx` (`user_id`, `business_id`),
