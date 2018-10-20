@@ -43,7 +43,7 @@ func (repo *BusinessRepository) SelectByIDs(ids []uint32) ([]*Business, error) {
     if err != nil {
         return nil, errors.Wrap(err, "error sqlx in")
     }
-    if err := repo.core.DB.Select(&businessRows, q, vs); err != nil {
+    if err := repo.core.DB.Select(&businessRows, q, vs...); err != nil {
         if err != sql.ErrNoRows {
             return nil, err
         }
