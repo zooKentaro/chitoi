@@ -16,4 +16,6 @@ type BusinessBuyRequest struct {
 }
 
 // BusinessBuyResponse is XXX
-type BusinessBuyResponse struct{}
+type BusinessBuyResponse struct {
+    UserBusinesses []*row.UserBusiness `json:"user_businesses"`
+}

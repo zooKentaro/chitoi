@@ -55,5 +55,12 @@ func (s *businessService) Buy(req *data.BusinessBuyRequest) (*data.BusinessBuyRe
         return nil, errors.Wrap(err, "error runkup maybe")
     }
 
-    return &data.BusinessBuyResponse{}, nil
+    ubRows, err := user.BusinessList()
+    if err != nil {
+        return nil, errors.Wrap(err, "error user business list")
+    }
+
+    return &data.BusinessBuyResponse{
+        UserBusinesses: ubRows,
+    }, nil
 }
