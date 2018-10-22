@@ -25,6 +25,7 @@ func main() {
 		Handler: server,
 	}
 
+	log.Println("API server is started.")
 	if err := srv.ListenAndServe(); err != nil {
 		log.Println(err.Error())
 	}
