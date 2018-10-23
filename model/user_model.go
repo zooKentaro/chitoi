@@ -17,7 +17,11 @@ import (
 var sessionKeyPrefix = "CHITOI-LOGIN-SESSION"
 
 func CreateNewUser(core *core.Core) (*User, error) {
-    token := uuid.NewV4().String()
+    v4, err := uuid.NewV4()
+    if err != nil {
+        return nil, errors.Wrap(err, "error uuid new v4")
+    }
+    token := v4.String()
     now := time.Now()
 
     userRow := &row.User{
@@ -98,7 +102,11 @@ func (repo *UserRepository) FindBySessionID(sessionID string) (*User, error) {
 }
 
 func (u *User) Login() (string, error) {
-    sessionID := uuid.NewV4().String()
+    v4, err := uuid.NewV4()
+    if err != nil {
+        return "", errors.Wrap(err, "error uuid new v4")
+    }
+    sessionID := v4.String()
     key := fmt.Sprintf("%s:%s", sessionKeyPrefix, sessionID)
     if _, err := u.core.Redis.Do("SET", key, u.Row.ID); err != nil {
         return "", errors.Wrap(err, "error set session")
