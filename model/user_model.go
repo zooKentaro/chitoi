@@ -32,7 +32,7 @@ func CreateNewUser(core *core.Core) (*User, error) {
         CreatedAt:   now,
     }
 
-    q := "INSERT INTO `user` (`name`, `token`, `last_login_at`, `rank`, `money`, `stamina`, `created_at`) VALUES (?,?,?,?,?,?,?,?)"
+    q := "INSERT INTO `user` (`name`, `token`, `last_login_at`, `rank`, `money`, `stamina`, `created_at`) VALUES (?,?,?,?,?,?,?)"
     res, err := core.DB.Exec(q, "", token, now, 1, userRow.Money, userRow.Stamina, now)
     if err != nil {
         return nil, errors.Wrap(err, "error create user")
