@@ -37,8 +37,9 @@ func (u *userService) Signup(req *data.UserSignupRequest) (*data.UserSignupRespo
     }
 
     return &data.UserSignupResponse{
-        User:      user.Row,
-        SessionID: sessionID,
+        User:       user.Row,
+        SessionID:  sessionID,
+        Businesses: u.Core.Masterdata.Businesses,
     }, nil
 }
 
