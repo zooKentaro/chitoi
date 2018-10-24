@@ -4,7 +4,6 @@ import (
 	"encoding/json"
 	"io/ioutil"
 	"net/http"
-	"os"
 
 	"github.com/pkg/errors"
 	"github.com/uenoryo/chitoi/data"
@@ -47,9 +46,8 @@ func WriteJSON(w http.ResponseWriter, res interface{}) error {
 func WriteBaseHeader(w http.ResponseWriter) {
 	w.Header().Set("Content-Type", "application/json")
 
-	if os.Getenv("CHITOI_ENV") != "production" {
-		w.Header().Set("Access-Control-Allow-Origin", "*")
-	}
+	// TODO: 本番環境ではセットしないようにする
+	w.Header().Set("Access-Control-Allow-Origin", "*")
 }
 
 // WriteSuccess is XXX
