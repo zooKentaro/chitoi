@@ -31,7 +31,7 @@ func (u *userService) Signup(req *data.UserSignupRequest) (*data.UserSignupRespo
         return nil, errors.Wrap(err, "error create new user")
     }
 
-    sessionID, err := user.Login()
+    sessionID, _, err := user.Login()
     if err != nil {
         return nil, errors.Wrap(err, "error login")
     }
@@ -55,16 +55,17 @@ func (u *userService) Login(req *data.UserLoginRequest) (*data.UserLoginResponse
         return nil, errors.Wrap(err, "error user business list")
     }
 
-    sessionID, err := user.Login()
+    sessionID, isTodayFirstLogin, err := user.Login()
     if err != nil {
         return nil, errors.Wrap(err, "error login")
     }
 
     return &data.UserLoginResponse{
-        User:           user.Row,
-        SessionID:      sessionID,
-        UserBusinesses: ubRows,
-        Businesses:     u.Core.Masterdata.Businesses,
+        User:              user.Row,
+        SessionID:         sessionID,
+        UserBusinesses:    ubRows,
+        Businesses:        u.Core.Masterdata.Businesses,
+        IsTodayFirstLogin: isTodayFirstLogin,
     }, nil
 }
 
