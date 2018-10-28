@@ -12,3 +12,10 @@ func IsSameDay(a, b time.Time) bool {
 
     return BeginningOfA.Unix() == BeginningOfB.Unix()
 }
+
+// BeginningOfDayFromTime is XXX
+func BeginningOfDayFromTime(t time.Time) time.Time {
+    d := time.Duration(-t.Hour()) * time.Hour
+
+    return t.Truncate(time.Hour).Add(d)
+}
