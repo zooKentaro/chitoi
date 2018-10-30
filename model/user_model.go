@@ -235,7 +235,7 @@ func (u *User) UpdateRecord(bestScore, bestTotalScore uint64) error {
         return errors.Wrap(err, "error lock for update")
     }
 
-    if u.Row.BestScore <= bestScore && u.Row.BestTotalScore <= bestTotalScore {
+    if u.Row.BestScore > bestScore && u.Row.BestTotalScore > bestTotalScore {
         return nil
     }
 
