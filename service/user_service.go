@@ -11,6 +11,7 @@ type UserService interface {
     Signup(*data.UserSignupRequest) (*data.UserSignupResponse, error)
     Login(*data.UserLoginRequest) (*data.UserLoginResponse, error)
     Info(*data.UserInfoRequest) (*data.UserInfoResponse, error)
+    Record(*data.UserRecordRequest) (*data.UserRecordResponse, error)
 }
 
 type userService struct {
@@ -85,4 +86,18 @@ func (u *userService) Info(req *data.UserInfoRequest) (*data.UserInfoResponse, e
         User:           user.Row,
         UserBusinesses: ubRows,
     }, nil
+}
+
+// Record is XXX
+func (u *userService) Record(req *data.UserRecordRequest) (*data.UserRecordResponse, error) {
+    user, err := NewAuthService(u.Core).Authenticate(req.SessionID)
+    if err != nil {
+        return nil, errors.Wrap(err, "error authenticate user")
+    }
+
+    if err := user.UpdateRecord(req.BestScore, req.BestTotalScore); err != nil {
+        return nil, errors.Wrap(err, "error user update record")
+    }
+
+    return &data.UserRecordResponse{}, nil
 }
