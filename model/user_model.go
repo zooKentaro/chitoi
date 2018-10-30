@@ -125,8 +125,20 @@ func (u *User) Login() (string, bool, error) {
 
     isTodayFirstLogin := helper.BeginningOfDayFromTime(time.Now()).After(u.Row.LastLoginAt)
     if isTodayFirstLogin {
-        q := "UPDATE user SET last_login_at = ? WHERE id = ?"
-        if _, err := u.core.DB.Exec(q, time.Now(), u.Row.ID); err != nil {
+        selected, err := NewUserBusinessRepository(u.core).SelectByUserID(u.Row.ID)
+        if err != nil {
+            return "", false, errors.Wrap(err, "error select user business by user id")
+        }
+        ubs := UserBusinesses(selected)
+        profits, err := ubs.Profits()
+        if err != nil {
+            return "", false, errors.Wrap(err, "error profits")
+        }
+
+        u.Row.Money += profits
+
+        q := "UPDATE user SET last_login_at = ?, money = ? WHERE id = ?"
+        if _, err := u.core.DB.Exec(q, time.Now(), u.Row.Money, u.Row.ID); err != nil {
             return "", false, errors.Wrap(err, "error update user data")
         }
     }

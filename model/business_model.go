@@ -168,3 +168,20 @@ func (b *Business) NextPrice(ub *row.UserBusiness) (uint64, error) {
     }
     return 0, errors.Errorf("error invalid business level:%d", ub.Level)
 }
+
+func (b *Business) Profit(ub *row.UserBusiness) (int64, error) {
+    if ub == nil {
+        return 0, nil
+    }
+    switch ub.Level {
+    case 0:
+        return int64(float32(b.Row.PriceBase) * float32(b.Row.ReturnRateBase) / 10 / 100), nil
+    case 1:
+        return int64(float32(b.Row.PriceBase) * float32(b.Row.ReturnRateBase) / 10 / 100), nil
+    case 2:
+        return int64(float32(b.Row.PriceLevel2) * float32(b.Row.ReturnRateLevel2) / 10 / 100), nil
+    case 3:
+        return int64(float32(b.Row.PriceLevel3) * float32(b.Row.ReturnRateLevel3) / 10 / 100), nil
+    }
+    return 0, errors.Errorf("error invalid business level:%d", ub.Level)
+}
