@@ -101,24 +101,49 @@ func (repo *UserRepository) FindBySessionID(sessionID string) (*User, error) {
     return repo.FindByID(userID)
 }
 
-func (u *User) Login() (string, error) {
+func (u *User) Login() (string, bool, error) {
     v4, err := uuid.NewV4()
     if err != nil {
-        return "", errors.Wrap(err, "error uuid new v4")
+        return "", false, errors.Wrap(err, "error uuid new v4")
     }
     sessionID := v4.String()
     key := fmt.Sprintf("%s:%s", sessionKeyPrefix, sessionID)
     if _, err := u.core.Redis.Do("SET", key, u.Row.ID); err != nil {
-        return "", errors.Wrap(err, "error set session")
+        return "", false, errors.Wrap(err, "error set session")
     }
 
     // 有効期限 2週間
     expire := 60 * 60 * 24 * 14
     if _, err := u.core.Redis.Do("EXPIRE", key, expire); err != nil {
-        return "", errors.Wrap(err, "error set expire")
+        return "", false, errors.Wrap(err, "error set expire")
     }
 
-    return sessionID, nil
+    // 日付が変わっていたら収益を付与して last_login_at を更新
+    if _, err := u.core.DB.Exec("SELECT * FROM user WHERE id = ? FOR UPDATE", u.Row.ID); err != nil {
+        return "", false, errors.Wrap(err, "error lock for update")
+    }
+
+    isTodayFirstLogin := helper.BeginningOfDayFromTime(time.Now()).After(u.Row.LastLoginAt)
+    if isTodayFirstLogin {
+        selected, err := NewUserBusinessRepository(u.core).SelectByUserID(u.Row.ID)
+        if err != nil {
+            return "", false, errors.Wrap(err, "error select user business by user id")
+        }
+        ubs := UserBusinesses(selected)
+        profits, err := ubs.Profits()
+        if err != nil {
+            return "", false, errors.Wrap(err, "error profits")
+        }
+
+        u.Row.Money += profits
+
+        q := "UPDATE user SET last_login_at = ?, money = ? WHERE id = ?"
+        if _, err := u.core.DB.Exec(q, time.Now(), u.Row.Money, u.Row.ID); err != nil {
+            return "", false, errors.Wrap(err, "error update user data")
+        }
+    }
+
+    return sessionID, isTodayFirstLogin, nil
 }
 
 // GameData は1ゲームのデータを扱う

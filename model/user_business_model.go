@@ -57,3 +57,28 @@ func (ubs UserBusinesses) Businesses() ([]*Business, error) {
     }
     return bs, nil
 }
+
+func (ubs UserBusinesses) Profits() (int64, error) {
+    if len(ubs) == 0 {
+        return 0, nil
+    }
+
+    businesses, err := ubs.Businesses()
+    if err != nil {
+        return 0, errors.Wrap(err, "error businesses")
+    }
+    businessByID := make(map[uint32]*Business)
+    for _, b := range businesses {
+        businessByID[b.Row.ID] = b
+    }
+
+    profits := int64(0)
+    for _, ub := range ubs {
+        prf, err := businessByID[ub.Row.BusinessID].Profit(ub.Row)
+        if err != nil {
+            return 0, errors.Wrap(err, "error profit")
+        }
+        profits += prf
+    }
+    return profits, nil
+}
