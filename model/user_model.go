@@ -230,6 +230,30 @@ func (u *User) BusinessBuy(business *Business) error {
     return nil
 }
 
+func (u *User) UpdateRecord(bestScore, bestTotalScore uint64) error {
+    if _, err := u.core.DB.Exec("SELECT * FROM user WHERE id = ? FOR UPDATE", u.Row.ID); err != nil {
+        return errors.Wrap(err, "error lock for update")
+    }
+
+    if u.Row.BestScore <= bestScore && u.Row.BestTotalScore <= bestTotalScore {
+        return nil
+    }
+
+    if u.Row.BestScore < bestScore {
+        u.Row.BestScore = bestScore
+    }
+
+    if u.Row.BestTotalScore < bestTotalScore {
+        u.Row.BestTotalScore = bestTotalScore
+    }
+
+    q := "UPDATE user SET best_score = ?, best_total_score = ? WHERE id = ?"
+    if _, err := u.core.DB.Exec(q, u.Row.BestScore, u.Row.BestTotalScore, u.Row.ID); err != nil {
+        return errors.Wrap(err, "error update user data")
+    }
+    return nil
+}
+
 // RankupMaybe は現在の資産に応じてランクを上げる
 func (u *User) RankupMaybe() (bool, error) {
     assets, err := u.Assets()
