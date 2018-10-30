@@ -10,6 +10,8 @@ CREATE TABLE `user` (
     `rank` INTEGER unsigned NOT NULL DEFAULT 1,
     `money` BIGINT NOT NULL DEFAULT 0,
     `stamina` INTEGER unsigned NOT NULL DEFAULT 0,
+    `best_score` BIGINT unsigned NOT NULL DEFAULT 0,
+    `best_total_score` BIGINT unsigned NOT NULL DEFAULT 0,
     `created_at` DATETIME NOT NULL,
     PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARACTER SET utf8mb4;

@@ -49,3 +49,13 @@ type UserInfoResponse struct {
     User           *row.User           `json:"user"`
     UserBusinesses []*row.UserBusiness `json:"user_businesses"`
 }
+
+// UserRecordRequest is XXX
+type UserRecordRequest struct {
+    SessionID      string `json:"session_id"`
+    BestScore      uint64 `json:"best_score,string"`
+    BestTotalScore uint64 `json:"best_total_score,string"`
+}
+
+// UserRecordResponse is XXX
+type UserRecordResponse struct{}
