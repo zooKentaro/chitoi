@@ -273,7 +273,9 @@ func (u *User) RankupMaybe() (bool, error) {
         return false, nil
     }
 
-    if _, err := u.core.DB.Exec("UPDATE user SET rank = ? WHERE id = ?", rank, u.Row.ID); err != nil {
+    u.Row.Rank = rank
+
+    if _, err := u.core.DB.Exec("UPDATE user SET rank = ? WHERE id = ?", u.Row.Rank, u.Row.ID); err != nil {
         return false, errors.Wrap(err, "error update user")
     }
     return true, nil
