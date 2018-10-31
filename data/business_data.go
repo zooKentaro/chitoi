@@ -18,4 +18,5 @@ type BusinessBuyRequest struct {
 // BusinessBuyResponse is XXX
 type BusinessBuyResponse struct {
     UserBusinesses []*row.UserBusiness `json:"user_businesses"`
+    AfterRank      uint32              `json:"after_rank"`
 }
