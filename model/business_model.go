@@ -109,7 +109,7 @@ func (repo *BusinessRepository) todaysPrefNum() (uint32, error) {
 
     if !exists || isOld {
         rand.Seed(time.Now().UnixNano())
-        prefNum = uint32(rand.Intn(8) + 40) // TODO: 現状は40 ~ 47 まで。マスターが入ったら 1 ~ 47にする
+        prefNum = uint32(rand.Intn(8) + 25) // TODO: 現状は40 ~ 47 まで。マスターが入ったら 1 ~ 47にする
 
         if _, err := repo.core.Redis.Do("SET", key, fmt.Sprintf("%s_%d", nowStr, prefNum)); err != nil {
             return 0, errors.Wrap(err, "error set datetime and prefecture num")
