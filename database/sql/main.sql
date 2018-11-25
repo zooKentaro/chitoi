@@ -36,6 +36,8 @@ CREATE TABLE `user_rank` (
     `id` INTEGER unsigned NOT NULL AUTO_INCREMENT,
     `rank` INTEGER unsigned NOT NULL,
     `assets` BIGINT unsigned NOT NULL,
+    `normal_rate` INTEGER unsigned NOT NULL,
+    `hard_rate` INTEGER unsigned NOT NULL,
     PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARACTER SET utf8mb4;
 
