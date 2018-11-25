@@ -23,6 +23,7 @@ type UserSignupResponse struct {
     User       *row.User       `json:"user"`
     SessionID  string          `json:"session_id"`
     Businesses []*row.Business `json:"businesses"`
+    UserRanks  []*row.UserRank `json:"user_rank"`
 }
 
 // UserLoginRequest is XXX
@@ -36,6 +37,7 @@ type UserLoginResponse struct {
     SessionID         string              `json:"session_id"`
     UserBusinesses    []*row.UserBusiness `json:"user_businesses"`
     Businesses        []*row.Business     `json:"businesses"`
+    UserRanks         []*row.UserRank     `json:"user_rank"`
     IsTodayFirstLogin bool                `json:"is_today_first_login"`
 }
 

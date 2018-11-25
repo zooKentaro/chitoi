@@ -41,6 +41,7 @@ func (u *userService) Signup(req *data.UserSignupRequest) (*data.UserSignupRespo
         User:       user.Row,
         SessionID:  sessionID,
         Businesses: u.Core.Masterdata.Businesses,
+        UserRanks:  u.Core.Masterdata.UserRanks,
     }, nil
 }
 
@@ -66,6 +67,7 @@ func (u *userService) Login(req *data.UserLoginRequest) (*data.UserLoginResponse
         SessionID:         sessionID,
         UserBusinesses:    ubRows,
         Businesses:        u.Core.Masterdata.Businesses,
+        UserRanks:         u.Core.Masterdata.UserRanks,
         IsTodayFirstLogin: isTodayFirstLogin,
     }, nil
 }
