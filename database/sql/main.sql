@@ -38,6 +38,12 @@ CREATE TABLE `user_rank` (
     `assets` BIGINT unsigned NOT NULL,
     `normal_rate` INTEGER unsigned NOT NULL,
     `hard_rate` INTEGER unsigned NOT NULL,
+    `com1_normal_level` INTEGER unsigned NOT NULL,
+    `com2_normal_level` INTEGER unsigned NOT NULL,
+    `com3_normal_level` INTEGER unsigned NOT NULL,
+    `com1_hard_level` INTEGER unsigned NOT NULL,
+    `com2_hard_level` INTEGER unsigned NOT NULL,
+    `com3_hard_level` INTEGER unsigned NOT NULL,
     PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARACTER SET utf8mb4;
 
