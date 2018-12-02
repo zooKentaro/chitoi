@@ -7,8 +7,11 @@ docker-dev-start:
 docker-dev-stop:
 	docker-compose -f ./docker/dev/docker-compose.yml -p chitoi stop
 
+import-masterdata:
+	go run ./masterdata/hamster
+
 migration-force:
-	go run ./database/migration/main.go -deploy
+	go run ./database/migration -deploy
 
 generate-schema:
-	go run ./database/ddlmaker/main.go
+	go run ./database/ddlmaker
