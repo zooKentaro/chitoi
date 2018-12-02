@@ -1,4 +1,4 @@
-id,rank,assets_amount,normal_rate,hard_rate,com1_normal_level,com2_normal_level,com3_normal_level,com1_hard_level,com2_hard_level,com3_hard_level
+id,rank,assets,normal_rate,hard_rate,com1_normal_level,com2_normal_level,com3_normal_level,com1_hard_level,com2_hard_level,com3_hard_level
 1,1,0,1,3,0,0,0,1,1,1
 2,2,400,2,6,0,0,0,1,1,1
 3,3,900,3,9,0,0,0,1,1,1
