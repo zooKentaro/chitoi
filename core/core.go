@@ -41,14 +41,6 @@ func New() (*Core, error) {
         return nil, errors.Wrap(err, "error connect fluent")
     }
 
-    // var data = map[string]string{
-    //     "key1": "MY FIRST POST",
-    // }
-
-    // if err := logger.Post("test", data); err != nil {
-    //     return nil, errors.Wrap(err, "error post")
-    // }
-
     return &Core{
         DB:     dbConn,
         Redis:  redisConn,
