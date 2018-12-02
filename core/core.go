@@ -3,17 +3,20 @@ package core
 import (
     "database/sql"
 
+    fluentd "github.com/fluent/fluent-logger-golang/fluent"
     redigo "github.com/garyburd/redigo/redis"
     "github.com/jmoiron/sqlx"
     "github.com/pkg/errors"
     "github.com/uenoryo/chitoi/database"
     "github.com/uenoryo/chitoi/database/row"
+    "github.com/uenoryo/chitoi/fluent"
     "github.com/uenoryo/chitoi/redis"
 )
 
 type Core struct {
     DB         *sqlx.DB
     Redis      redigo.Conn
+    Logger     *fluentd.Fluent
     Masterdata Masterdata
 }
 
@@ -33,9 +36,23 @@ func New() (*Core, error) {
         return nil, errors.Wrap(err, "error connect redis")
     }
 
+    logger, err := fluent.Connect()
+    if err != nil {
+        return nil, errors.Wrap(err, "error connect fluent")
+    }
+
+    // var data = map[string]string{
+    //     "key1": "MY FIRST POST",
+    // }
+
+    // if err := logger.Post("test", data); err != nil {
+    //     return nil, errors.Wrap(err, "error post")
+    // }
+
     return &Core{
-        DB:    dbConn,
-        Redis: redisConn,
+        DB:     dbConn,
+        Redis:  redisConn,
+        Logger: logger,
     }, nil
 }
 

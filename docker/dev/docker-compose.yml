@@ -10,3 +10,9 @@ services:
     build: ./redis/
     ports:
       - 36379:6379
+  fluentd:
+    build: ./fluentd/
+    volumes:
+      - ./fluentd/log:/fluentd/log
+    ports:
+      - "24224:24224"
