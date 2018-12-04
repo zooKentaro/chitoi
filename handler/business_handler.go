@@ -36,7 +36,7 @@ func (h *BusinessHandler) ListHandler(w http.ResponseWriter, r *http.Request) {
 	res, err := h.Service.List()
 	if err != nil {
 		log.Println(err.Error())
-		if err := h.Core.Logger.PostError("api.business", err.Error()); err != nil {
+		if err := h.Core.Logger.PostError("api.business.list", err.Error()); err != nil {
 			log.Println(err.Error())
 		}
 		WriteError400or500(w, err)
@@ -56,7 +56,7 @@ func (h *BusinessHandler) BuyHandler(w http.ResponseWriter, r *http.Request) {
 	err := ScanRequest(r, req)
 	if err != nil {
 		log.Println(err.Error())
-		if err := h.Core.Logger.PostError("api.business", err.Error()); err != nil {
+		if err := h.Core.Logger.PostError("api.business.buy", err.Error()); err != nil {
 			log.Println(err.Error())
 		}
 		WriteError400(w, err.Error())
@@ -66,7 +66,7 @@ func (h *BusinessHandler) BuyHandler(w http.ResponseWriter, r *http.Request) {
 	res, err := h.Service.Buy(req)
 	if err != nil {
 		log.Println(err.Error())
-		if err := h.Core.Logger.PostError("api.business", err.Error()); err != nil {
+		if err := h.Core.Logger.PostError("api.business.buy", err.Error()); err != nil {
 			log.Println(err.Error())
 		}
 		WriteError400or500(w, err)

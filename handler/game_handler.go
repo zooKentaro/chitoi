@@ -36,7 +36,7 @@ func (h *GameHandler) FinishHandler(w http.ResponseWriter, r *http.Request) {
 	err := ScanRequest(r, req)
 	if err != nil {
 		log.Println(err.Error())
-		if err := h.Core.Logger.PostError("api.business", err.Error()); err != nil {
+		if err := h.Core.Logger.PostError("api.game.finish", err.Error()); err != nil {
 			log.Println(err.Error())
 		}
 		WriteError400(w, err.Error())
@@ -46,7 +46,7 @@ func (h *GameHandler) FinishHandler(w http.ResponseWriter, r *http.Request) {
 	res, err := h.Service.Finish(req)
 	if err != nil {
 		log.Println(err.Error())
-		if err := h.Core.Logger.PostError("api.business", err.Error()); err != nil {
+		if err := h.Core.Logger.PostError("api.game.finish", err.Error()); err != nil {
 			log.Println(err.Error())
 		}
 		WriteError400or500(w, err)
