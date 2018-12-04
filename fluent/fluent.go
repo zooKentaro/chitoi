@@ -1,6 +1,7 @@
 package fluent
 
 import (
+    "fmt"
     "os"
     "strconv"
 
@@ -11,6 +12,10 @@ import (
 type Logger struct {
     logger *fluent.Fluent
 }
+
+const (
+    ErrorTagSuffix = "error"
+)
 
 func Connect() (*Logger, error) {
     port, err := strconv.Atoi(os.Getenv("CHITOI_FLUENT_PORT"))
@@ -31,6 +36,14 @@ func Connect() (*Logger, error) {
     return &Logger{logger: fluent}, nil
 }
 
-func (lgr *Logger) PostError() error {
+func (lgr *Logger) PostError(tag, msg string) error {
+    errTag := fmt.Sprintf("%s.%s", tag, ErrorTagSuffix)
+    data := map[string]string{
+        "message": msg,
+    }
+
+    if err := lgr.logger.Post(errTag, data); err != nil {
+        return errors.Wrapf(err, "error post log, tag: %s, data: %+v", errTag, data)
+    }
     return nil
 }
