@@ -67,3 +67,7 @@ func (core *Core) LoadMasterdata() error {
     core.Masterdata.UserRanks = userRanks
     return nil
 }
+
+func (core *Core) PostError() error {
+    //
+}
