@@ -3,7 +3,6 @@ package core
 import (
     "database/sql"
 
-    fluentd "github.com/fluent/fluent-logger-golang/fluent"
     redigo "github.com/garyburd/redigo/redis"
     "github.com/jmoiron/sqlx"
     "github.com/pkg/errors"
@@ -16,7 +15,7 @@ import (
 type Core struct {
     DB         *sqlx.DB
     Redis      redigo.Conn
-    Logger     *fluentd.Fluent
+    Logger     *fluent.Logger
     Masterdata Masterdata
 }
 
@@ -66,8 +65,4 @@ func (core *Core) LoadMasterdata() error {
     core.Masterdata.Businesses = businesses
     core.Masterdata.UserRanks = userRanks
     return nil
-}
-
-func (core *Core) PostError() error {
-    //
 }
