@@ -4,6 +4,7 @@ import (
     "fmt"
     "os"
     "strconv"
+    "time"
 
     "github.com/fluent/fluent-logger-golang/fluent"
     "github.com/pkg/errors"
@@ -39,6 +40,7 @@ func Connect() (*Logger, error) {
 func (lgr *Logger) PostError(tag, msg string) error {
     errTag := fmt.Sprintf("%s.%s", tag, ErrorTagSuffix)
     data := map[string]string{
+        "time":    time.Now().Format("2006-01-02 15:04:05"),
         "message": msg,
     }
 
