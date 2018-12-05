@@ -4,18 +4,21 @@ import (
 	"log"
 	"net/http"
 
+	"github.com/uenoryo/chitoi/core"
 	"github.com/uenoryo/chitoi/data"
 	"github.com/uenoryo/chitoi/service"
 )
 
 // NewBusinessHandler is XXX
-func NewBusinessHandler(srv service.BusinessService) *BusinessHandler {
+func NewBusinessHandler(core *core.Core, srv service.BusinessService) *BusinessHandler {
 	return &BusinessHandler{
+		Core:    core,
 		Service: srv,
 	}
 }
 
 type BusinessHandler struct {
+	Core    *core.Core
 	Service service.BusinessService
 }
 
@@ -33,6 +36,9 @@ func (h *BusinessHandler) ListHandler(w http.ResponseWriter, r *http.Request) {
 	res, err := h.Service.List()
 	if err != nil {
 		log.Println(err.Error())
+		if err := h.Core.Logger.PostError("api.business.list", err.Error()); err != nil {
+			log.Println(err.Error())
+		}
 		WriteError400or500(w, err)
 		return
 	}
@@ -50,6 +56,9 @@ func (h *BusinessHandler) BuyHandler(w http.ResponseWriter, r *http.Request) {
 	err := ScanRequest(r, req)
 	if err != nil {
 		log.Println(err.Error())
+		if err := h.Core.Logger.PostError("api.business.buy", err.Error()); err != nil {
+			log.Println(err.Error())
+		}
 		WriteError400(w, err.Error())
 		return
 	}
@@ -57,6 +66,9 @@ func (h *BusinessHandler) BuyHandler(w http.ResponseWriter, r *http.Request) {
 	res, err := h.Service.Buy(req)
 	if err != nil {
 		log.Println(err.Error())
+		if err := h.Core.Logger.PostError("api.business.buy", err.Error()); err != nil {
+			log.Println(err.Error())
+		}
 		WriteError400or500(w, err)
 		return
 	}

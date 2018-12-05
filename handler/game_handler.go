@@ -4,18 +4,21 @@ import (
 	"log"
 	"net/http"
 
+	"github.com/uenoryo/chitoi/core"
 	"github.com/uenoryo/chitoi/data"
 	"github.com/uenoryo/chitoi/service"
 )
 
 // NewGameHandler is XXX
-func NewGameHandler(srv service.GameService) *GameHandler {
+func NewGameHandler(core *core.Core, srv service.GameService) *GameHandler {
 	return &GameHandler{
+		Core:    core,
 		Service: srv,
 	}
 }
 
 type GameHandler struct {
+	Core    *core.Core
 	Service service.GameService
 }
 
@@ -33,6 +36,9 @@ func (h *GameHandler) FinishHandler(w http.ResponseWriter, r *http.Request) {
 	err := ScanRequest(r, req)
 	if err != nil {
 		log.Println(err.Error())
+		if err := h.Core.Logger.PostError("api.game.finish", err.Error()); err != nil {
+			log.Println(err.Error())
+		}
 		WriteError400(w, err.Error())
 		return
 	}
@@ -40,6 +46,9 @@ func (h *GameHandler) FinishHandler(w http.ResponseWriter, r *http.Request) {
 	res, err := h.Service.Finish(req)
 	if err != nil {
 		log.Println(err.Error())
+		if err := h.Core.Logger.PostError("api.game.finish", err.Error()); err != nil {
+			log.Println(err.Error())
+		}
 		WriteError400or500(w, err)
 		return
 	}

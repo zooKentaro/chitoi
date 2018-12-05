@@ -4,18 +4,21 @@ import (
 	"log"
 	"net/http"
 
+	"github.com/uenoryo/chitoi/core"
 	"github.com/uenoryo/chitoi/data"
 	"github.com/uenoryo/chitoi/service"
 )
 
 // NewUserHandler is XXX
-func NewUserHandler(srv service.UserService) *UserHandler {
+func NewUserHandler(core *core.Core, srv service.UserService) *UserHandler {
 	return &UserHandler{
+		Core:    core,
 		Service: srv,
 	}
 }
 
 type UserHandler struct {
+	Core    *core.Core
 	Service service.UserService
 }
 
@@ -48,6 +51,9 @@ func (h *UserHandler) SignupHandler(w http.ResponseWriter, r *http.Request) {
 	res, err := h.Service.Signup(req)
 	if err != nil {
 		log.Println(err.Error())
+		if err := h.Core.Logger.PostError("api.user.signp", err.Error()); err != nil {
+			log.Println(err.Error())
+		}
 		WriteError400or500(w, err)
 		return
 	}
@@ -65,6 +71,9 @@ func (h *UserHandler) LoginHandler(w http.ResponseWriter, r *http.Request) {
 	err := ScanRequest(r, req)
 	if err != nil {
 		log.Println(err.Error())
+		if err := h.Core.Logger.PostError("api.user.login", err.Error()); err != nil {
+			log.Println(err.Error())
+		}
 		WriteError400(w, err.Error())
 		return
 	}
@@ -72,6 +81,9 @@ func (h *UserHandler) LoginHandler(w http.ResponseWriter, r *http.Request) {
 	res, err := h.Service.Login(req)
 	if err != nil {
 		log.Println(err.Error())
+		if err := h.Core.Logger.PostError("api.user.login", err.Error()); err != nil {
+			log.Println(err.Error())
+		}
 		WriteError400or500(w, err)
 		return
 	}
@@ -96,6 +108,9 @@ func (h *UserHandler) InfoHandler(w http.ResponseWriter, r *http.Request) {
 	res, err := h.Service.Info(req)
 	if err != nil {
 		log.Println(err.Error())
+		if err := h.Core.Logger.PostError("api.user.info", err.Error()); err != nil {
+			log.Println(err.Error())
+		}
 		WriteError400or500(w, err)
 		return
 	}
@@ -120,6 +135,9 @@ func (h *UserHandler) RecordHandler(w http.ResponseWriter, r *http.Request) {
 	res, err := h.Service.Record(req)
 	if err != nil {
 		log.Println(err.Error())
+		if err := h.Core.Logger.PostError("api.user.record", err.Error()); err != nil {
+			log.Println(err.Error())
+		}
 		WriteError400or500(w, err)
 		return
 	}
