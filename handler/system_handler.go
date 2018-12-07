@@ -6,20 +6,17 @@ import (
 
 	"github.com/uenoryo/chitoi/core"
 	"github.com/uenoryo/chitoi/data"
-	"github.com/uenoryo/chitoi/service"
 )
 
 // NewSystemHandler is XXX
-func NewSystemHandler(core *core.Core, srv service.GameService) *SystemHandler {
+func NewSystemHandler(core *core.Core) *SystemHandler {
 	return &SystemHandler{
-		Core:    core,
-		Service: srv,
+		Core: core,
 	}
 }
 
 type SystemHandler struct {
-	Core    *core.Core
-	Service service.GameService
+	Core *core.Core
 }
 
 // NewSystemServer is XXX
