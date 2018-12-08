@@ -6,8 +6,8 @@ import (
 
 // SystemLoggerRequest is XXX
 type SystemLoggerRequest struct {
-	Tag  string `json:"tag,string"`
-	Body string `json:"body,string"`
+	Tag  string `json:"tag"`
+	Body string `json:"body"`
 }
 
 func (u *SystemLoggerRequest) Validate() error {
