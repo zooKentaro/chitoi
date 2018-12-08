@@ -49,7 +49,7 @@ func (u *userService) Signup(req *data.UserSignupRequest) (*data.UserSignupRespo
 func (u *userService) Login(req *data.UserLoginRequest) (*data.UserLoginResponse, error) {
     user, err := model.NewUserRepository(u.Core).FindByToken(req.Token)
     if err != nil {
-        return nil, errors.Wrap(err, "error find user by token")
+        return nil, errors.Wrapf(err, "error find user by token: %s", req.Token[0:32])
     }
 
     ubRows, err := user.BusinessList()
