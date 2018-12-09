@@ -60,6 +60,7 @@ CREATE TABLE `business` (
     `return_rate_base` INTEGER unsigned NOT NULL,
     `return_rate_level2` INTEGER unsigned NOT NULL,
     `return_rate_level3` INTEGER unsigned NOT NULL,
+    `icon_id` INTEGER unsigned NOT NULL,
     PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARACTER SET utf8mb4;
 
