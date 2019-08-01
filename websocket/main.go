@@ -14,11 +14,13 @@ func main() {
 		return
 	}
 
-	server, err := wsserver.NewServer()
+	server, listener, err := wsserver.NewServer()
 	if err != nil {
 		log.Fatal("error new server, error: ", err.Error())
 		return
 	}
+
+	go listener.Listen()
 
 	srv := http.Server{
 		Addr:    ":8081",
