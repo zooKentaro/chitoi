@@ -4,7 +4,7 @@ import (
 	"log"
 	"net/http"
 
-	"github.com/uenoryo/chitoi/websocket/server"
+	wsserver "github.com/uenoryo/chitoi/websocket/server"
 	"github.com/uenoryo/hnk/env"
 )
 
@@ -14,7 +14,7 @@ func main() {
 		return
 	}
 
-	server, err := server.NewServer()
+	server, err := wsserver.NewServer()
 	if err != nil {
 		log.Fatal("error new server, error: ", err.Error())
 		return
