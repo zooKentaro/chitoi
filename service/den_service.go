@@ -1,6 +1,7 @@
 package service
 
 import (
+	"fmt"
 	"io"
 	"log"
 
@@ -45,11 +46,13 @@ func newListener() *Listener {
 		doneCh    = make(chan bool)
 		errCh     = make(chan error)
 		sendAllCh = make(chan string)
+		clients   = make(map[uint64]*Client)
 	)
 	return &Listener{
 		doneCh,
 		errCh,
 		sendAllCh,
+		clients,
 	}
 }
 
@@ -57,6 +60,7 @@ type Listener struct {
 	doneCh    chan bool
 	errCh     chan error
 	sendAllCh chan string
+	clients   map[uint64]*Client
 }
 
 func (l *Listener) Listen() {
@@ -70,12 +74,16 @@ func (l *Listener) Listen() {
 
 		case msg := <-l.sendAllCh:
 			log.Println("Send all:", msg)
+			for id, client := range l.clients {
+				client.Write(fmt.Sprintf("message: %s, id:%d", msg, id))
+			}
 		}
 	}
 }
 
 func (l *Listener) Add(c *Client) {
 	log.Println("ADDED")
+	l.clients[c.ID] = c
 }
 
 func (l *Listener) SendAll(msg string) {
@@ -90,6 +98,7 @@ type Client struct {
 	ID       uint64
 	ws       *websocket.Conn
 	listener *Listener
+	ch       chan string
 	doneCh   chan bool
 }
 
@@ -98,17 +107,21 @@ func NewClient(ws *websocket.Conn, listener *Listener) *Client {
 	var (
 		id     = maxID
 		doneCh = make(chan bool)
+		ch     = make(chan string)
 	)
 
 	return &Client{
 		ID:       id,
 		ws:       ws,
 		listener: listener,
+		ch:       ch,
 		doneCh:   doneCh,
 	}
 }
 
 func (c *Client) Listen() {
+	go c.listenWrite()
+
 	log.Println("Listening read from client")
 	for {
 		select {
@@ -130,5 +143,31 @@ func (c *Client) Listen() {
 				c.listener.SendAll(string(data))
 			}
 		}
+	}
+}
+
+func (c *Client) listenWrite() {
+	log.Println("Listening write to client")
+	for {
+		select {
+
+		// send message to the client
+		case msg := <-c.ch:
+			log.Println("Send:", msg)
+			websocket.Message.Send(c.ws, msg)
+
+		// receive done request
+		case <-c.doneCh:
+			c.doneCh <- true // for listenRead method
+			return
+		}
+	}
+}
+
+func (c *Client) Write(msg string) {
+	select {
+	case c.ch <- msg:
+	default:
+		c.listener.Err(fmt.Errorf("client %d is disconnected.", c.ID))
 	}
 }
