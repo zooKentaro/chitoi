@@ -1,8 +1,6 @@
 package handler
 
 import (
-	"io"
-	"log"
 	"net/http"
 
 	"github.com/uenoryo/chitoi/core"
@@ -33,6 +31,5 @@ func NewDenServer(h *DenHandler) *http.ServeMux {
 
 // DenHandler is XXX
 func (h *DenHandler) Handler(ws *websocket.Conn) {
-	log.Println("Connected")
-	io.Copy(ws, ws)
+	h.Service.Entry(ws)
 }
