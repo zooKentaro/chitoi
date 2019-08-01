@@ -4,8 +4,8 @@ import (
 	"log"
 	"net/http"
 
-	"github.com/uenoryo/chitoi/api"
-	"github.com/uenoryo/chitoi/env"
+	"github.com/uenoryo/chitoi/websocket/server"
+	"github.com/uenoryo/hnk/env"
 )
 
 func main() {
@@ -14,7 +14,7 @@ func main() {
 		return
 	}
 
-	server, err := api.NewServer()
+	server, err := server.NewServer()
 	if err != nil {
 		log.Fatal("error new server, error: ", err.Error())
 		return
@@ -25,7 +25,7 @@ func main() {
 		Handler: server,
 	}
 
-	log.Println("API server is started.")
+	log.Println("web socket server is started.")
 	if err := srv.ListenAndServe(); err != nil {
 		log.Println(err.Error())
 	}

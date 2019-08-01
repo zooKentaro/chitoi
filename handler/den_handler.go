@@ -2,21 +2,25 @@ package handler
 
 import (
 	"io"
+	"log"
 	"net/http"
 
 	"github.com/uenoryo/chitoi/core"
+	"github.com/uenoryo/chitoi/service"
 	"golang.org/x/net/websocket"
 )
 
 // NewDenHandler is XXX
-func NewDenHandler(core *core.Core) *DenHandler {
+func NewDenHandler(core *core.Core, srv service.DenService) *DenHandler {
 	return &DenHandler{
-		Core: core,
+		Core:    core,
+		Service: srv,
 	}
 }
 
 type DenHandler struct {
-	Core *core.Core
+	Core    *core.Core
+	Service service.DenService
 }
 
 // NewDenServer is XXX
@@ -29,5 +33,6 @@ func NewDenServer(h *DenHandler) *http.ServeMux {
 
 // DenHandler is XXX
 func (h *DenHandler) Handler(ws *websocket.Conn) {
+	log.Println("Connected")
 	io.Copy(ws, ws)
 }
