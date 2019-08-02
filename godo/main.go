@@ -13,7 +13,7 @@ func tasks(p *do.Project) {
 		case "WebScoket", "websocket":
 			c.Start("websocket/main.go", do.M{"$in": "./websocket/"})
 		default:
-			c.Start("websocket/main.go", do.M{"$in": "./websocket"})
+			c.Start("main.go", do.M{"$in": "./"})
 		}
 	}).Src("*.go", "**/*.go").
 		Debounce(3000)
