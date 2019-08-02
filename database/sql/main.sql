@@ -68,7 +68,7 @@ CREATE TABLE `business` (
 DROP TABLE IF EXISTS `room`;
 
 CREATE TABLE `room` (
-    `id` BIGINT unsigned NOT NULL AUTO_INCREMENT,
+    `id` BIGINT unsigned NOT NULL,
     `owner_id` BIGINT unsigned NOT NULL,
     `user1_id` BIGINT unsigned NOT NULL,
     `user2_id` BIGINT unsigned NOT NULL,

@@ -8,7 +8,7 @@ import (
 )
 
 type Room struct {
-    ID        uint64    `ddl:"auto" json:"id,string"`
+    ID        uint64    `json:"id,string"`
     OwnerID   uint64    `db:"owner_id" json:"owner_id,string"`
     User1ID   uint64    `db:"user1_id" json:"user1_id,string"`
     User2ID   uint64    `db:"user2_id" json:"user2_id,string"`
