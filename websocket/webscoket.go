@@ -6,11 +6,11 @@ import (
     "github.com/pkg/errors"
     "github.com/uenoryo/chitoi/core"
     "github.com/uenoryo/chitoi/handler"
-    "github.com/uenoryo/chitoi/service"
+    "github.com/uenoryo/chitoi/websocket/service"
 )
 
 // NewServer is XXX
-func NewServer() (*http.ServeMux, *service.Listener, error) {
+func NewServer() (*http.ServeMux, service.Listener, error) {
     srv := http.NewServeMux()
 
     core, err := core.New()

@@ -4,7 +4,7 @@ import (
 	"net/http"
 
 	"github.com/uenoryo/chitoi/core"
-	"github.com/uenoryo/chitoi/service"
+	"github.com/uenoryo/chitoi/websocket/service"
 	"golang.org/x/net/websocket"
 )
 

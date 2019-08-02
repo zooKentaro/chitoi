@@ -4,7 +4,7 @@ import (
 	"log"
 	"net/http"
 
-	"github.com/uenoryo/hnk/env"
+	"github.com/uenoryo/chitoi/env"
 )
 
 func main() {
