@@ -6,36 +6,29 @@ import (
     "github.com/pkg/errors"
     "github.com/uenoryo/chitoi/core"
     "github.com/uenoryo/chitoi/database/row"
+    "github.com/uenoryo/chitoi/lib/id"
 )
 
 const (
-    InsertRoomSQL = "INSERT INTO `room` (`owner_id`, `user1_id`, `user2_id`, `user3_id`, `user4_id`) VALUES (?,?,?,?,?)"
+    InsertRoomSQL = "INSERT INTO `room` (`id`, `owner_id`, `user1_id`, `user2_id`, `user3_id`, `user4_id`) VALUES (?,?,?,?,?)"
 )
 
 func CreateNewRoom(core *core.Core, userID uint64) (*Room, error) {
-    now := time.Now()
-
-    roomRow := &row.Room{
+    room := &row.Room{
+        ID:        id.Generate(),
         OwnerID:   userID,
         User1ID:   userID,
         User2ID:   0,
         User3ID:   0,
         User4ID:   0,
-        CreatedAt: now,
+        CreatedAt: time.Now(),
     }
-    res, err := core.DB.Exec(InsertRoomSQL, roomRow.OwnerID, roomRow.User1ID, roomRow.User2ID, roomRow.User3ID, roomRow.User4ID, roomRow.CreatedAt)
-    if err != nil {
+    if _, err := core.DB.Exec(InsertRoomSQL, room.ID, room.OwnerID, room.User1ID, room.User2ID, room.User3ID, room.User4ID, room.CreatedAt); err != nil {
         return nil, errors.Wrapf(err, "error create room, sql:%s", InsertRoomSQL)
     }
 
-    id, err := res.LastInsertId()
-    if err != nil {
-        return nil, errors.Wrap(err, "error last insert id")
-    }
-    roomRow.ID = uint64(id)
-
     return &Room{
-        Row:  roomRow,
+        Row:  room,
         core: core,
     }, nil
 }
