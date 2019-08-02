@@ -24,12 +24,12 @@ type DenHandler struct {
 // NewDenServer is XXX
 func NewDenServer(h *DenHandler) *http.ServeMux {
 	server := http.NewServeMux()
-	server.Handle("/", websocket.Handler(h.Handler))
+	server.Handle("/entry", websocket.Handler(h.EntryHandler))
 
 	return server
 }
 
-// DenHandler is XXX
-func (h *DenHandler) Handler(ws *websocket.Conn) {
+// EntryHandler is XXX
+func (h *DenHandler) EntryHandler(ws *websocket.Conn) {
 	h.Service.Entry(ws)
 }
