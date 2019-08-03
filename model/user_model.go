@@ -45,10 +45,7 @@ func CreateNewUser(core *core.Core) (*User, error) {
     }
     userRow.ID = uint64(id)
 
-    return &User{
-        Row:  userRow,
-        core: core,
-    }, nil
+    return NewUser(core, userRow), nil
 }
 
 type UserRepository struct {
@@ -59,37 +56,43 @@ func NewUserRepository(core *core.Core) *UserRepository {
     return &UserRepository{core: core}
 }
 
+func NewUser(core *core.Core, row *row.User) *User {
+    user := &User{
+        core: core,
+        Row:  row,
+    }
+    user.Room = &UserRoom{core, user}
+
+    return user
+}
+
 type User struct {
     Row  *row.User
     core *core.Core
+
+    Room *UserRoom
 }
 
 func (repo *UserRepository) FindByToken(token string) (*User, error) {
-    userRow := row.User{}
+    userRow := &row.User{}
     if err := repo.core.DB.Get(&userRow, "SELECT * FROM user WHERE token = ?", token); err != nil {
         if err == sql.ErrNoRows {
             return nil, errors.Wrap(err, "user is not found")
         }
         return nil, err
     }
-    return &User{
-        Row:  &userRow,
-        core: repo.core,
-    }, nil
+    return NewUser(repo.core, userRow), nil
 }
 
 func (repo *UserRepository) FindByID(id uint64) (*User, error) {
-    userRow := row.User{}
+    userRow := &row.User{}
     if err := repo.core.DB.Get(&userRow, "SELECT * FROM user WHERE id = ?", id); err != nil {
         if err == sql.ErrNoRows {
             return nil, errors.Wrap(err, "user is not found")
         }
         return nil, err
     }
-    return &User{
-        Row:  &userRow,
-        core: repo.core,
-    }, nil
+    return NewUser(repo.core, userRow), nil
 }
 
 func (repo *UserRepository) FindBySessionID(sessionID string) (*User, error) {

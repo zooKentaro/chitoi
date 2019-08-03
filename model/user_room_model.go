@@ -14,8 +14,8 @@ const (
 )
 
 type UserRoom struct {
-    user *User
     core *core.Core
+    user *User
 }
 
 func (ur *UserRoom) Create() (*Room, error) {
