@@ -1,14 +1,22 @@
 package service
 
 import (
+	"fmt"
+
+	"github.com/pkg/errors"
 	"github.com/uenoryo/chitoi/core"
+	apiservice "github.com/uenoryo/chitoi/service"
 	"github.com/uenoryo/chitoi/websocket/model"
 	"golang.org/x/net/websocket"
 )
 
+const (
+	UserSessionHeaderKey = "X-CHITOI-SESSION"
+)
+
 type DenService interface {
 	Listener() Listener
-	Entry(*websocket.Conn)
+	Entry(*websocket.Conn) error
 }
 
 type Listener interface {
@@ -36,8 +44,17 @@ func (srv *denService) Listener() Listener {
 }
 
 // Entry は client を作成し、websocketで server と接続する
-func (srv *denService) Entry(ws *websocket.Conn) {
+func (srv *denService) Entry(ws *websocket.Conn) error {
+	sessionID := ws.Request().Header.Get(UserSessionHeaderKey)
+
+	user, err := apiservice.NewAuthService(srv.core).Authenticate(sessionID)
+	if err != nil {
+		return errors.Wrap(err, "error authenticate user")
+	}
+	fmt.Println(user)
+
 	client := model.NewClient(ws, srv._server)
 	srv._server.Add(client)
 	client.Listen()
+	return nil
 }

@@ -31,5 +31,7 @@ func NewDenServer(h *DenHandler) *http.ServeMux {
 
 // EntryHandler is XXX
 func (h *DenHandler) EntryHandler(ws *websocket.Conn) {
-	h.Service.Entry(ws)
+	if err := h.Service.Entry(ws); err != nil {
+		WriteError400or500(ws, err)
+	}
 }

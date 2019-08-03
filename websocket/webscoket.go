@@ -5,7 +5,7 @@ import (
 
     "github.com/pkg/errors"
     "github.com/uenoryo/chitoi/core"
-    "github.com/uenoryo/chitoi/handler"
+    "github.com/uenoryo/chitoi/websocket/handler"
     "github.com/uenoryo/chitoi/websocket/service"
 )
 
