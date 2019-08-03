@@ -12,7 +12,7 @@ import (
 )
 
 const (
-    InsertRoomSQL           = "INSERT INTO `room` (`id`, `owner_id`, `user1_id`, `user2_id`, `user3_id`, `user4_id`, `created_at`) VALUES (?,?,?,?,?,?,?)"
+    InsertRoomSQL           = "INSERT INTO `room` (`id`, `code`, `owner_id`, `user1_id`, `user2_id`, `user3_id`, `user4_id`, `created_at`, `expired_at`) VALUES (?,?,?,?,?,?,?,?,?)"
     CountValidRoomByCodeSQL = "SELECT count(*) FROM room WHERE code = ? AND expired_at > ?"
 )
 
@@ -22,16 +22,27 @@ type UserRoom struct {
 }
 
 func (ur *UserRoom) Create() (*Room, error) {
+    roomCode, err := ur.generateRoomCode()
+    if err != nil {
+        return nil, errors.Wrap(err, "generate room code failed")
+    }
+
+    var (
+        now       = time.Now()
+        expiredAt = now.Add(time.Hour * 24 * 2)
+    )
     room := &row.Room{
         ID:        id.Generate(),
+        Code:      roomCode,
         OwnerID:   ur.user.Row.ID,
         User1ID:   ur.user.Row.ID,
         User2ID:   0,
         User3ID:   0,
         User4ID:   0,
-        CreatedAt: time.Now(),
+        CreatedAt: now,
+        ExpiredAt: expiredAt,
     }
-    if _, err := ur.core.DB.Exec(InsertRoomSQL, room.ID, room.OwnerID, room.User1ID, room.User2ID, room.User3ID, room.User4ID, room.CreatedAt); err != nil {
+    if _, err := ur.core.DB.Exec(InsertRoomSQL, room.ID, room.Code, room.OwnerID, room.User1ID, room.User2ID, room.User3ID, room.User4ID, room.CreatedAt, room.ExpiredAt); err != nil {
         return nil, errors.Wrapf(err, "error create room, sql:%s", InsertRoomSQL)
     }
 
@@ -54,7 +65,7 @@ func (ur *UserRoom) generateRoomCode() (uint32, error) {
         code := uint32(rand.Intn(maxRandNum) + minRandNum)
 
         var count int
-        if err := ur.core.DB.Select(&count, CountValidRoomByCodeSQL, code, time.Now()); err != nil {
+        if err := ur.core.DB.Get(&count, CountValidRoomByCodeSQL, code, time.Now()); err != nil {
             return errors.Wrapf(err, "count room failed, sql:%s", CountValidRoomByCodeSQL)
         }
         if count != 0 {
