@@ -1,8 +1,10 @@
 package model
 
 import (
+    "math/rand"
     "time"
 
+    "github.com/Songmu/retry"
     "github.com/pkg/errors"
     "github.com/uenoryo/chitoi/core"
     "github.com/uenoryo/chitoi/database/row"
@@ -10,7 +12,8 @@ import (
 )
 
 const (
-    InsertRoomSQL = "INSERT INTO `room` (`id`, `owner_id`, `user1_id`, `user2_id`, `user3_id`, `user4_id`, `created_at`) VALUES (?,?,?,?,?,?,?)"
+    InsertRoomSQL           = "INSERT INTO `room` (`id`, `owner_id`, `user1_id`, `user2_id`, `user3_id`, `user4_id`, `created_at`) VALUES (?,?,?,?,?,?,?)"
+    CountValidRoomByCodeSQL = "SELECT count(*) FROM room WHERE code = ? AND expired_at > ?"
 )
 
 type UserRoom struct {
@@ -36,4 +39,32 @@ func (ur *UserRoom) Create() (*Room, error) {
         Row:  room,
         core: ur.core,
     }, nil
+}
+
+func (ur *UserRoom) generateRoomCode() (uint32, error) {
+    var (
+        retryCount    = uint(10)
+        retryInterval = time.Second * 0
+        maxRandNum    = 900000
+        minRandNum    = 100000
+        result        = uint32(0)
+    )
+    err := retry.Retry(retryCount, retryInterval, func() error {
+        rand.Seed(time.Now().UnixNano())
+        code := uint32(rand.Intn(maxRandNum) + minRandNum)
+
+        var count int
+        if err := ur.core.DB.Select(&count, CountValidRoomByCodeSQL, code, time.Now()); err != nil {
+            return errors.Wrapf(err, "count room failed, sql:%s", CountValidRoomByCodeSQL)
+        }
+        if count != 0 {
+            return errors.Errorf("error room code:%d is already exists", code)
+        }
+        result = code
+        return nil
+    })
+    if err != nil {
+        return 0, errors.Wrap(err, "error generate room code")
+    }
+    return result, nil
 }
