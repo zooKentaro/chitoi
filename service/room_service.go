@@ -1,6 +1,7 @@
 package service
 
 import (
+    "github.com/pkg/errors"
     "github.com/uenoryo/chitoi/core"
     "github.com/uenoryo/chitoi/data"
 )
@@ -22,5 +23,16 @@ func NewRoomService(core *core.Core) RoomService {
 
 // Create is XXX
 func (s *roomService) Create(req *data.RoomCreateRequest) (*data.RoomCreateResponse, error) {
-    return nil, nil
+    user, err := NewAuthService(s.Core).Authenticate(req.SessionID)
+    if err != nil {
+        return nil, errors.Wrap(err, "error authenticate user")
+    }
+
+    room, err := user.Room.Create()
+    if err != nil {
+        return nil, errors.Wrap(err, "create user room failed")
+    }
+    return &data.RoomCreateResponse{
+        Room: room.Row,
+    }, nil
 }
