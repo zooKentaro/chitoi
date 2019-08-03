@@ -8,6 +8,12 @@
   revision = "4748e29d5718c2df4028a6543edf86fd8cc0f881"
 
 [[projects]]
+  name = "github.com/Songmu/retry"
+  packages = ["."]
+  revision = "3b66b2f4a94a73bd4afaeeed2390db2527ac2b81"
+  version = "v0.1.0"
+
+[[projects]]
   name = "github.com/deckarep/golang-set"
   packages = ["."]
   revision = "cbaa98ba5575e67703b32b4b19f73c91f3c4159e"
@@ -170,6 +176,12 @@
 
 [[projects]]
   branch = "master"
+  name = "golang.org/x/net"
+  packages = ["websocket"]
+  revision = "ca1201d0de80cfde86cb01aea620983605dfe99b"
+
+[[projects]]
+  branch = "master"
   name = "golang.org/x/sys"
   packages = [
     "unix",
@@ -198,6 +210,6 @@
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "3227a7d8d5664eae82a99bdf3ffe7765cf434c1670db2a9adb82a9cb0860e298"
+  inputs-digest = "6ea13d0407adc8b35231fa74c8fd7a08d16c6bf34f599f7ab63abe8fcd6da3cf"
   solver-name = "gps-cdcl"
   solver-version = 1
