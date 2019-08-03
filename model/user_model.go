@@ -74,7 +74,7 @@ type User struct {
 }
 
 func (repo *UserRepository) FindByToken(token string) (*User, error) {
-    userRow := &row.User{}
+    userRow := row.User{}
     err := repo.core.DB.Get(&userRow, "SELECT * FROM user WHERE token = ?", token)
     switch {
     case err == sql.ErrNoRows:
@@ -82,11 +82,11 @@ func (repo *UserRepository) FindByToken(token string) (*User, error) {
     case err != nil:
         return nil, err
     }
-    return NewUser(repo.core, userRow), nil
+    return NewUser(repo.core, &userRow), nil
 }
 
 func (repo *UserRepository) FindByID(id uint64) (*User, error) {
-    userRow := &row.User{}
+    userRow := row.User{}
     err := repo.core.DB.Get(&userRow, "SELECT * FROM user WHERE id = ?", id)
     switch {
     case err == sql.ErrNoRows:
@@ -94,7 +94,7 @@ func (repo *UserRepository) FindByID(id uint64) (*User, error) {
     case err != nil:
         return nil, err
     }
-    return NewUser(repo.core, userRow), nil
+    return NewUser(repo.core, &userRow), nil
 }
 
 func (repo *UserRepository) FindBySessionID(sessionID string) (*User, error) {
