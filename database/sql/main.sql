@@ -69,12 +69,15 @@ DROP TABLE IF EXISTS `room`;
 
 CREATE TABLE `room` (
     `id` BIGINT unsigned NOT NULL,
+    `code` INTEGER unsigned NOT NULL,
     `owner_id` BIGINT unsigned NOT NULL,
     `user1_id` BIGINT unsigned NOT NULL,
     `user2_id` BIGINT unsigned NOT NULL,
     `user3_id` BIGINT unsigned NOT NULL,
     `user4_id` BIGINT unsigned NOT NULL,
     `created_at` DATETIME NOT NULL,
+    `expired_at` DATETIME NOT NULL,
+    INDEX `code_idx` (`code`),
     INDEX `owner_id_idx` (`owner_id`),
     PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARACTER SET utf8mb4;

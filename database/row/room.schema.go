@@ -9,12 +9,14 @@ import (
 
 type Room struct {
     ID        uint64    `json:"id,string"`
+    Code      uint32    `json:"code"`
     OwnerID   uint64    `db:"owner_id" json:"owner_id,string"`
     User1ID   uint64    `db:"user1_id" json:"user1_id,string"`
     User2ID   uint64    `db:"user2_id" json:"user2_id,string"`
     User3ID   uint64    `db:"user3_id" json:"user3_id,string"`
     User4ID   uint64    `db:"user4_id" json:"user4_id,string"`
     CreatedAt time.Time `db:"created_at" json:"created_at"`
+    ExpiredAt time.Time `db:"expired_at" json:"expired_at"`
 }
 
 func (r *Room) PrimaryKey() dialect.PrimaryKey {
@@ -24,6 +26,7 @@ func (r *Room) PrimaryKey() dialect.PrimaryKey {
 // Indexes is XXX
 func (r *Room) Indexes() dialect.Indexes {
     return dialect.Indexes{
+        mysql.AddIndex("code_idx", "code"),
         mysql.AddIndex("owner_id_idx", "owner_id"),
     }
 }
