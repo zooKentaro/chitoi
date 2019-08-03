@@ -75,10 +75,11 @@ type User struct {
 
 func (repo *UserRepository) FindByToken(token string) (*User, error) {
     userRow := &row.User{}
-    if err := repo.core.DB.Get(&userRow, "SELECT * FROM user WHERE token = ?", token); err != nil {
-        if err == sql.ErrNoRows {
-            return nil, errors.Wrap(err, "user is not found")
-        }
+    err := repo.core.DB.Get(&userRow, "SELECT * FROM user WHERE token = ?", token)
+    switch {
+    case err == sql.ErrNoRows:
+        return nil, errors.Wrap(err, "user is not found")
+    case err != nil:
         return nil, err
     }
     return NewUser(repo.core, userRow), nil
@@ -86,10 +87,11 @@ func (repo *UserRepository) FindByToken(token string) (*User, error) {
 
 func (repo *UserRepository) FindByID(id uint64) (*User, error) {
     userRow := &row.User{}
-    if err := repo.core.DB.Get(&userRow, "SELECT * FROM user WHERE id = ?", id); err != nil {
-        if err == sql.ErrNoRows {
-            return nil, errors.Wrap(err, "user is not found")
-        }
+    err := repo.core.DB.Get(&userRow, "SELECT * FROM user WHERE id = ?", id)
+    switch {
+    case err == sql.ErrNoRows:
+        return nil, errors.Wrap(err, "user is not found")
+    case err != nil:
         return nil, err
     }
     return NewUser(repo.core, userRow), nil
@@ -176,13 +178,15 @@ func (u *User) GameFinish(data *GameData) error {
 
 func (u *User) BusinessList() ([]*row.UserBusiness, error) {
     ubRows := []*row.UserBusiness{}
-    if err := u.core.DB.Select(&ubRows, "SELECT * FROM user_business WHERE user_id = ?", u.Row.ID); err != nil {
-        if err != sql.ErrNoRows {
-            return nil, errors.Wrap(err, "error find user business")
-        }
+    err := u.core.DB.Select(&ubRows, "SELECT * FROM user_business WHERE user_id = ?", u.Row.ID)
+    switch {
+    case err == sql.ErrNoRows:
+        return []*row.UserBusiness{}, nil
+    case err != nil:
+        return nil, errors.Wrap(err, "error find user business")
+    default:
+        return ubRows, nil
     }
-
-    return ubRows, nil
 }
 
 func (u *User) BusinessBuy(business *Business) error {
