@@ -10,7 +10,7 @@ import (
 )
 
 const (
-    InsertRoomSQL = "INSERT INTO `room` (`id`, `owner_id`, `user1_id`, `user2_id`, `user3_id`, `user4_id`) VALUES (?,?,?,?,?)"
+    InsertRoomSQL = "INSERT INTO `room` (`id`, `owner_id`, `user1_id`, `user2_id`, `user3_id`, `user4_id`, `created_at`) VALUES (?,?,?,?,?,?,?)"
 )
 
 type UserRoom struct {
