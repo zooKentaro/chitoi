@@ -30,11 +30,15 @@ func NewServer() (*http.ServeMux, error) {
     businessService := service.NewBusinessService(core)
     businessHandler := handler.NewBusinessServer(handler.NewBusinessHandler(core, businessService))
 
+    roomService := service.NewRoomService(core)
+    roomHandler := handler.NewRoomServer(handler.NewRoomHandler(core, roomService))
+
     systemHandler := handler.NewSystemServer(handler.NewSystemHandler(core))
 
     server.Handle("/user/", userHandler)
     server.Handle("/game/", gameHandler)
     server.Handle("/business/", businessHandler)
+    server.Handle("/room/", roomHandler)
     server.Handle("/system/", systemHandler)
 
     return server, nil
