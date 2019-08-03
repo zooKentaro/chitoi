@@ -24,7 +24,7 @@ type DenHandler struct {
 // NewDenServer is XXX
 func NewDenServer(h *DenHandler) *http.ServeMux {
 	server := http.NewServeMux()
-	server.Handle("/entry", websocket.Handler(h.EntryHandler))
+	server.Handle("/den/entry", websocket.Handler(h.EntryHandler))
 
 	return server
 }
