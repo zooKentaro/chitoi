@@ -1,8 +1,6 @@
 package service
 
 import (
-	"fmt"
-
 	"github.com/pkg/errors"
 	"github.com/uenoryo/chitoi/core"
 	apiservice "github.com/uenoryo/chitoi/service"
@@ -12,6 +10,7 @@ import (
 
 const (
 	UserSessionHeaderKey = "X-CHITOI-SESSION"
+	RoomCodeHeaderKey    = "X-CHITOI-ROOM-CODE"
 )
 
 type DenService interface {
@@ -30,7 +29,7 @@ type denService struct {
 
 // NewDenService (､´･ω･)▄︻┻┳═一
 func NewDenService(core *core.Core) DenService {
-	server := model.NewServer()
+	server := model.NewServer(core)
 
 	return &denService{
 		core:    core,
@@ -45,16 +44,30 @@ func (srv *denService) Listener() Listener {
 
 // Entry は client を作成し、websocketで server と接続する
 func (srv *denService) Entry(ws *websocket.Conn) error {
-	sessionID := ws.Request().Header.Get(UserSessionHeaderKey)
-
+	var (
+		sessionID = ws.Request().Header.Get(UserSessionHeaderKey)
+		roomCode  = ws.Request().Header.Get(RoomCodeHeaderKey)
+	)
 	user, err := apiservice.NewAuthService(srv.core).Authenticate(sessionID)
 	if err != nil {
 		return errors.Wrap(err, "error authenticate user")
 	}
-	fmt.Println(user)
 
-	client := model.NewClient(ws, srv._server)
-	srv._server.Add(client)
-	client.Listen()
+	room, err := model.NewRoomRepository(core).FindByCode(roomCode)
+	if err != nil {
+		return errors.Wrapf(err, "error find room by code:%s", roomCode)
+	}
+
+	if room.OwnerIs(user) {
+		srv._server.Launch(room)
+	}
+
+	if !srv._server.IsLaunched(room) {
+		return errors.Errorf("room:%s is not launched on server", roomCode)
+	}
+
+	if err := room.Entry(user); err != nil {
+		return errors.Wrapf(err, "error entry room, room code:%s", roomCode)
+	}
 	return nil
 }
