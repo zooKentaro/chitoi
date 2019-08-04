@@ -1,0 +1,45 @@
+package model
+
+import (
+	"database/sql"
+	"time"
+
+	"github.com/pkg/errors"
+	"github.com/uenoryo/chitoi/core"
+	"github.com/uenoryo/chitoi/database/row"
+)
+
+const (
+	FindRoomByCodeSQL = "SELECT * FROM room WHERE code = ? AND expired_at < ?"
+)
+
+type RoomRepository struct {
+	core *core.Core
+}
+
+func (repo *RoomRepository) FindByCode(code uint32) (*Room, error) {
+	row := row.Room{}
+	err := repo.core.DB.Get(&row, FindRoomByCodeSQL, code, time.Now())
+	switch {
+	case err == sql.ErrNoRows:
+		return nil, errors.Errorf("room code:%d is not found", code)
+	case err != nil:
+		return nil, errors.Wrapf(err, "error find room by code, sql:%s", FindRoomByCodeSQL)
+	default:
+		return NewRoom(repo.core, &row), nil
+	}
+}
+
+type Room struct {
+	core    *core.Core
+	Row     *row.Room
+	Clients map[uint64]*Client
+}
+
+func NewRoom(core *core.Core, row *row.Room) *Room {
+	return &Room{
+		core,
+		row,
+		make(map[uint64]*Client),
+	}
+}
