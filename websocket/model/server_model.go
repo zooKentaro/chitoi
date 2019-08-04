@@ -64,7 +64,7 @@ func (s *Server) Launch(room *Room) {
 }
 
 // IsLaunched はserverにroomが立っているかどうかを返す
-func (r *Room) IsLaunched(room *Room) bool {
+func (s *Server) IsLaunched(room *Room) bool {
 	_, isLaunched := s.rooms[room.Row.Code]
 	return isLaunched
 }
