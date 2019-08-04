@@ -5,7 +5,16 @@ import (
 	"github.com/uenoryo/chitoi/database/row"
 )
 
+// NewRoom (､´･ω･)▄︻┻┳═一
+func NewRoom(core *core.Core, row *row.Room) *Room {
+	return &Room{
+		core,
+		row,
+	}
+}
+
+// Room はDenを行う部屋
 type Room struct {
-	Row  *row.Room
 	core *core.Core
+	Row  *row.Room
 }

@@ -47,8 +47,8 @@ func (ur *UserRoom) Create() (*Room, error) {
     }
 
     return &Room{
-        Row:  room,
         core: ur.core,
+        Row:  room,
     }, nil
 }
 
