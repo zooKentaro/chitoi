@@ -11,7 +11,8 @@ import (
 )
 
 const (
-	FindRoomByCodeSQL = "SELECT * FROM room WHERE code = ? AND expired_at < ?"
+	FindRoomByCodeSQL   = "SELECT * FROM room WHERE code = ? AND expired_at < ?"
+	UpdateRoomByCodeSQL = "UPDATE room SET player1_id = ?, player2_id = ?, player3_id = ?, player4_id = ?, expired_at = ? WHERE code = ?"
 )
 
 // NewRoomRepository (､´･ω･)▄︻┻┳═一
@@ -36,6 +37,14 @@ func (repo *RoomRepository) FindByCode(code uint32) (*Room, error) {
 	}
 }
 
+// Save (､´･ω･)▄︻┻┳═一
+func (repo *RoomRepository) Save(room *Room) error {
+	if _, err := repo.core.DB.Exec(UpdateRoomByCodeSQL, room.Row.Player1ID, room.Row.Player2ID, room.Row.Player3ID, room.Row.Player4ID, time.Now(), room.Row.Code); err != nil {
+		return errors.Wrapf(err, "error update room, sql:%s", UpdateRoomByCodeSQL)
+	}
+	return nil
+}
+
 type Room struct {
 	core    *core.Core
 	Row     *row.Room
@@ -53,4 +62,9 @@ func NewRoom(core *core.Core, row *row.Room) *Room {
 // OwnerIs は user が room のオーナーかどうかを返す
 func (r *Room) OwnerIs(user *model.User) bool {
 	return r.Row.OwnerID == user.Row.ID
+}
+
+// Entry はroomにuserを入室させる
+func (r *Room) Entry(user *model.User) error {
+	return nil
 }
