@@ -61,7 +61,9 @@ func (srv *denService) Entry(ws *websocket.Conn) error {
 		return errors.Wrap(err, "error authenticate user")
 	}
 
-	room, err := model.NewRoomRepository(srv.core).FindByCode(roomCode)
+	roomRepo := model.NewRoomRepository(srv.core)
+
+	room, err := roomRepo.FindByCode(roomCode)
 	if err != nil {
 		return errors.Wrapf(err, "error find room by code:%s", roomCode)
 	}
@@ -69,13 +71,17 @@ func (srv *denService) Entry(ws *websocket.Conn) error {
 	if room.OwnerIs(user) {
 		srv._server.Launch(room)
 	}
-
 	if !srv._server.IsLaunched(room) {
 		return errors.Errorf("room:%s is not launched on server", roomCode)
 	}
 
-	if err := room.Entry(user); err != nil {
+	if err := room.Entry(ws, user); err != nil {
 		return errors.Wrapf(err, "error entry room, room code:%s", roomCode)
 	}
+	if err := roomRepo.Save(room); err != nil {
+		return errors.Wrap(err, "error save room")
+	}
+
+	room.ListenAllClients()
 	return nil
 }

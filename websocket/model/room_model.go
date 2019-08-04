@@ -8,11 +8,16 @@ import (
 	"github.com/uenoryo/chitoi/core"
 	"github.com/uenoryo/chitoi/database/row"
 	"github.com/uenoryo/chitoi/model"
+	"golang.org/x/net/websocket"
 )
 
 const (
 	FindRoomByCodeSQL   = "SELECT * FROM room WHERE code = ? AND expired_at < ?"
 	UpdateRoomByCodeSQL = "UPDATE room SET player1_id = ?, player2_id = ?, player3_id = ?, player4_id = ?, expired_at = ? WHERE code = ?"
+)
+
+var (
+	ErrRoomHasNoVacancie = errors.New("error room has no vacancie")
 )
 
 // NewRoomRepository (､´･ω･)▄︻┻┳═一
@@ -65,6 +70,36 @@ func (r *Room) OwnerIs(user *model.User) bool {
 }
 
 // Entry はroomにuserを入室させる
-func (r *Room) Entry(user *model.User) error {
+func (r *Room) Entry(ws *websocket.Conn, user *model.User) error {
+	switch {
+	case r.isAlreadyEntried(user):
+		return nil
+	case r.Row.Player1ID == 0:
+		r.Row.Player1ID = user.Row.ID
+	case r.Row.Player2ID == 0:
+		r.Row.Player2ID = user.Row.ID
+	default:
+		return ErrRoomHasNoVacancie
+	}
+	r.Clients[user.Row.ID] = NewClient(ws, r, user)
+
 	return nil
+}
+
+func (r *Room) ListenAllClients() {
+	for _, client := range r.Clients {
+		if client.IsListening {
+			continue
+		}
+		client.Listen()
+	}
+}
+
+func (r *Room) isAlreadyEntried(user *model.User) bool {
+	switch user.Row.ID {
+	case r.Row.Player1ID, r.Row.Player2ID:
+		return true
+	default:
+		return false
+	}
 }

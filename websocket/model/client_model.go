@@ -9,11 +9,12 @@ import (
 )
 
 type Client struct {
-	ws     *websocket.Conn
-	room   *Room
-	ID     uint64
-	ch     chan string
-	doneCh chan bool
+	ws          *websocket.Conn
+	room        *Room
+	ID          uint64
+	IsListening bool
+	ch          chan string
+	doneCh      chan bool
 }
 
 func NewClient(ws *websocket.Conn, room *Room, user *model.User) *Client {
@@ -22,15 +23,21 @@ func NewClient(ws *websocket.Conn, room *Room, user *model.User) *Client {
 		ch     = make(chan string)
 	)
 	return &Client{
-		ID:     user.Row.ID,
-		ws:     ws,
-		room:   room,
-		ch:     ch,
-		doneCh: doneCh,
+		ID:          user.Row.ID,
+		IsListening: false,
+		ws:          ws,
+		room:        room,
+		ch:          ch,
+		doneCh:      doneCh,
 	}
 }
 
 func (c *Client) Listen() {
+	if c.IsListening {
+		return
+	}
+
+	c.IsListening = true
 	go c.listenWrite()
 
 	log.Println("Listening read from client")
