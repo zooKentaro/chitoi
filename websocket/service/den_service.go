@@ -52,7 +52,7 @@ func (srv *denService) Entry(ws *websocket.Conn) error {
 	)
 	roomCodeInt, err := strconv.Atoi(roomCodeStr)
 	if err != nil {
-		return errors.Wrapf(err, "invalid room code:%s", roomCodeStr)
+		return errors.Errorf("invalid room code:%s", roomCodeStr)
 	}
 	roomCode := uint32(roomCodeInt)
 
@@ -65,7 +65,7 @@ func (srv *denService) Entry(ws *websocket.Conn) error {
 
 	room, err := roomRepo.FindByCode(roomCode)
 	if err != nil {
-		return errors.Wrapf(err, "error find room by code:%s", roomCode)
+		return errors.Wrapf(err, "error find room by code:%d", roomCode)
 	}
 
 	if room.OwnerIs(user) {
