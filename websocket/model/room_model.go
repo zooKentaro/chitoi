@@ -13,6 +13,11 @@ const (
 	FindRoomByCodeSQL = "SELECT * FROM room WHERE code = ? AND expired_at < ?"
 )
 
+// NewRoomRepository (､´･ω･)▄︻┻┳═一
+func NewRoomRepository(core *core.Core) *RoomRepository {
+	return &RoomRepository{core}
+}
+
 type RoomRepository struct {
 	core *core.Core
 }
