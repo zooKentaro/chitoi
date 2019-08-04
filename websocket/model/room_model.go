@@ -7,6 +7,7 @@ import (
 	"github.com/pkg/errors"
 	"github.com/uenoryo/chitoi/core"
 	"github.com/uenoryo/chitoi/database/row"
+	"github.com/uenoryo/chitoi/model"
 )
 
 const (
@@ -47,4 +48,9 @@ func NewRoom(core *core.Core, row *row.Room) *Room {
 		row,
 		make(map[uint64]*Client),
 	}
+}
+
+// OwnerIs は user が room のオーナーかどうかを返す
+func (r *Room) OwnerIs(user *model.User) bool {
+	return r.Row.OwnerID == user.Row.ID
 }
