@@ -18,6 +18,12 @@ type Client struct {
 	doneCh      chan bool
 }
 
+// Packet は送受信1回分のデータ
+type Packet struct {
+	UserID     uint64 `json:"user_id"`
+	ActionType uint32 `json:"action_type"`
+}
+
 func NewClient(ws *websocket.Conn, room *Room, user *model.User) *Client {
 	var (
 		doneCh = make(chan bool)
