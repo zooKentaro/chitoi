@@ -1,6 +1,7 @@
 package model
 
 import (
+	"fmt"
 	"io"
 	"log"
 
@@ -54,7 +55,9 @@ func (c *Client) Listen() {
 			err := websocket.Message.Receive(c.ws, &data)
 			switch {
 			case err == io.EOF:
+				fmt.Println("close listenning for reading, id:", c.ID)
 				c.doneCh <- true
+				return
 			case err != nil:
 				// c.server.Err(err)
 			default:
@@ -76,7 +79,7 @@ func (c *Client) listenWrite() {
 
 		// receive done request
 		case <-c.doneCh:
-			c.doneCh <- true // for listenRead method
+			fmt.Println("close listenning for writing, id:", c.ID)
 			return
 		}
 	}

@@ -73,7 +73,7 @@ func (r *Room) OwnerIs(user *model.User) bool {
 func (r *Room) Entry(ws *websocket.Conn, user *model.User) error {
 	switch {
 	case r.isAlreadyEntried(user):
-		return nil
+		break
 	case r.Row.Player1ID == 0:
 		r.Row.Player1ID = user.Row.ID
 	case r.Row.Player2ID == 0:
