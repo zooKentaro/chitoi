@@ -12,7 +12,7 @@ import (
 )
 
 const (
-	FindRoomByCodeSQL   = "SELECT * FROM room WHERE code = ? AND expired_at < ?"
+	FindRoomByCodeSQL   = "SELECT * FROM room WHERE code = ? AND expired_at > ?"
 	UpdateRoomByCodeSQL = "UPDATE room SET player1_id = ?, player2_id = ?, player3_id = ?, player4_id = ?, expired_at = ? WHERE code = ?"
 )
 
@@ -44,7 +44,7 @@ func (repo *RoomRepository) FindByCode(code uint32) (*Room, error) {
 
 // Save (､´･ω･)▄︻┻┳═一
 func (repo *RoomRepository) Save(room *Room) error {
-	if _, err := repo.core.DB.Exec(UpdateRoomByCodeSQL, room.Row.Player1ID, room.Row.Player2ID, room.Row.Player3ID, room.Row.Player4ID, time.Now(), room.Row.Code); err != nil {
+	if _, err := repo.core.DB.Exec(UpdateRoomByCodeSQL, room.Row.Player1ID, room.Row.Player2ID, room.Row.Player3ID, room.Row.Player4ID, time.Now().Add(time.Hour*24*2), room.Row.Code); err != nil {
 		return errors.Wrapf(err, "error update room, sql:%s", UpdateRoomByCodeSQL)
 	}
 	return nil
