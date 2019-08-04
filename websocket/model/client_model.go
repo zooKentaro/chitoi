@@ -1,35 +1,30 @@
 package model
 
 import (
-	"fmt"
 	"io"
 	"log"
 
+	"github.com/uenoryo/chitoi/model"
 	"golang.org/x/net/websocket"
 )
 
-var maxID uint64 = 1001
-
 type Client struct {
-	ID     uint64
 	ws     *websocket.Conn
-	server *Server
+	room   *Room
+	ID     uint64
 	ch     chan string
 	doneCh chan bool
 }
 
-func NewClient(ws *websocket.Conn, server *Server) *Client {
-	maxID++
+func NewClient(ws *websocket.Conn, room *Room, user *model.User) *Client {
 	var (
-		id     = maxID
 		doneCh = make(chan bool)
 		ch     = make(chan string)
 	)
-
 	return &Client{
-		ID:     id,
+		ID:     user.Row.ID,
 		ws:     ws,
-		server: server,
+		room:   room,
 		ch:     ch,
 		doneCh: doneCh,
 	}
@@ -54,9 +49,9 @@ func (c *Client) Listen() {
 			case err == io.EOF:
 				c.doneCh <- true
 			case err != nil:
-				c.server.Err(err)
+				// c.server.Err(err)
 			default:
-				c.server.SendAll(string(data))
+				// c.server.SendAll(string(data))
 			}
 		}
 	}
@@ -84,6 +79,6 @@ func (c *Client) Write(msg string) {
 	select {
 	case c.ch <- msg:
 	default:
-		c.server.Err(fmt.Errorf("client %d is disconnected.", c.ID))
+		// c.server.Err(fmt.Errorf("client %d is disconnected.", c.ID))
 	}
 }

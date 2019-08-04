@@ -52,7 +52,7 @@ func (srv *denService) Entry(ws *websocket.Conn) error {
 	)
 	roomCodeInt, err := strconv.Atoi(roomCodeStr)
 	if err != nil {
-		return errors.Wrapf(err, "invalid room code:%s", roomCode)
+		return errors.Wrapf(err, "invalid room code:%s", roomCodeStr)
 	}
 	roomCode := uint32(roomCodeInt)
 
@@ -61,7 +61,7 @@ func (srv *denService) Entry(ws *websocket.Conn) error {
 		return errors.Wrap(err, "error authenticate user")
 	}
 
-	room, err := model.NewRoomRepository(core).FindByCode(roomCode)
+	room, err := model.NewRoomRepository(srv.core).FindByCode(roomCode)
 	if err != nil {
 		return errors.Wrapf(err, "error find room by code:%s", roomCode)
 	}
