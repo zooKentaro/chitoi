@@ -1,6 +1,8 @@
 package service
 
 import (
+	"strconv"
+
 	"github.com/pkg/errors"
 	"github.com/uenoryo/chitoi/core"
 	apiservice "github.com/uenoryo/chitoi/service"
@@ -45,9 +47,15 @@ func (srv *denService) Listener() Listener {
 // Entry は client を作成し、websocketで server と接続する
 func (srv *denService) Entry(ws *websocket.Conn) error {
 	var (
-		sessionID = ws.Request().Header.Get(UserSessionHeaderKey)
-		roomCode  = ws.Request().Header.Get(RoomCodeHeaderKey)
+		sessionID   = ws.Request().Header.Get(UserSessionHeaderKey)
+		roomCodeStr = ws.Request().Header.Get(RoomCodeHeaderKey)
 	)
+	roomCodeInt, err := strconv.Atoi(roomCodeStr)
+	if err != nil {
+		return errors.Wrapf(err, "invalid room code:%s", roomCode)
+	}
+	roomCode := uint32(roomCodeInt)
+
 	user, err := apiservice.NewAuthService(srv.core).Authenticate(sessionID)
 	if err != nil {
 		return errors.Wrap(err, "error authenticate user")
