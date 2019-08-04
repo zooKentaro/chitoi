@@ -12,7 +12,7 @@ import (
 )
 
 const (
-    InsertRoomSQL           = "INSERT INTO `room` (`id`, `code`, `owner_id`, `user1_id`, `user2_id`, `user3_id`, `user4_id`, `created_at`, `expired_at`) VALUES (?,?,?,?,?,?,?,?,?)"
+    InsertRoomSQL           = "INSERT INTO `room` (`id`, `code`, `owner_id`, `player1_id`, `player2_id`, `player3_id`, `player4_id`, `created_at`, `expired_at`) VALUES (?,?,?,?,?,?,?,?,?)"
     CountValidRoomByCodeSQL = "SELECT count(*) FROM room WHERE code = ? AND expired_at > ?"
 )
 
@@ -35,14 +35,14 @@ func (ur *UserRoom) Create() (*Room, error) {
         ID:        id.Generate(),
         Code:      roomCode,
         OwnerID:   ur.user.Row.ID,
-        User1ID:   ur.user.Row.ID,
-        User2ID:   0,
-        User3ID:   0,
-        User4ID:   0,
+        Player1ID: ur.user.Row.ID,
+        Player2ID: 0,
+        Player3ID: 0,
+        Player4ID: 0,
         CreatedAt: now,
         ExpiredAt: expiredAt,
     }
-    if _, err := ur.core.DB.Exec(InsertRoomSQL, room.ID, room.Code, room.OwnerID, room.User1ID, room.User2ID, room.User3ID, room.User4ID, room.CreatedAt, room.ExpiredAt); err != nil {
+    if _, err := ur.core.DB.Exec(InsertRoomSQL, room.ID, room.Code, room.OwnerID, room.Player1ID, room.Player2ID, room.Player3ID, room.Player4ID, room.CreatedAt, room.ExpiredAt); err != nil {
         return nil, errors.Wrapf(err, "error create room, sql:%s", InsertRoomSQL)
     }
 
