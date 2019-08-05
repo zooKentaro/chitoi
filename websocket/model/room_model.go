@@ -2,6 +2,7 @@ package model
 
 import (
 	"database/sql"
+	"fmt"
 	"time"
 
 	"github.com/pkg/errors"
@@ -105,6 +106,25 @@ func (r *Room) ListenAllClients() {
 			continue
 		}
 		client.Listen()
+	}
+}
+
+func (r *Room) Submit(packet *Packet) {
+	packet.RoomCode = r.Row.Code
+	server, _ := r.Server()
+	if server != nil {
+		server.Receive(packet)
+	} else {
+		fmt.Println("ないよ")
+	}
+}
+
+func (r *Room) SendToMembers(packet *Packet) {
+	for _, member := range r.Clients {
+		if packet.SenderID == member.ID {
+			continue
+		}
+		member.Receive(packet)
 	}
 }
 

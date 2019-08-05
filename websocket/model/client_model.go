@@ -14,20 +14,21 @@ type Client struct {
 	room        *Room
 	ID          uint64
 	IsListening bool
-	ch          chan string
+	ch          chan *Packet
 	doneCh      chan bool
 }
 
 // Packet は送受信1回分のデータ
 type Packet struct {
-	UserID     uint64 `json:"user_id"`
+	SenderID   uint64 `json:"sender_id,string"`
 	ActionType uint32 `json:"action_type"`
+	RoomCode   uint32
 }
 
 func NewClient(ws *websocket.Conn, room *Room, user *model.User) *Client {
 	var (
 		doneCh = make(chan bool)
-		ch     = make(chan string)
+		ch     = make(chan *Packet)
 	)
 	return &Client{
 		ID:          user.Row.ID,
@@ -57,7 +58,7 @@ func (c *Client) Listen() {
 			return
 
 		default:
-			packet := Packet{}
+			packet := &Packet{}
 			err := websocket.JSON.Receive(c.ws, &packet)
 			switch {
 			case err == io.EOF:
@@ -72,7 +73,7 @@ func (c *Client) Listen() {
 					server.Err(err)
 				}
 			default:
-				// c.server.SendAll(string(data))
+				c.room.Submit(packet)
 			}
 		}
 	}
@@ -84,9 +85,9 @@ func (c *Client) listenWrite() {
 		select {
 
 		// send message to the client
-		case msg := <-c.ch:
-			log.Println("Send:", msg)
-			websocket.Message.Send(c.ws, msg)
+		case packet := <-c.ch:
+			log.Println("Send:", packet)
+			websocket.JSON.Send(c.ws, packet)
 
 		// receive done request
 		case <-c.doneCh:
@@ -96,9 +97,10 @@ func (c *Client) listenWrite() {
 	}
 }
 
-func (c *Client) Write(msg string) {
+func (c *Client) Receive(packet *Packet) {
 	select {
-	case c.ch <- msg:
+	case c.ch <- packet:
+		log.Println(packet, "を受け取ったよ！")
 	default:
 		// c.server.Err(fmt.Errorf("client %d is disconnected.", c.ID))
 	}

@@ -27,6 +27,7 @@ type Listener interface {
 type denService struct {
 	core    *core.Core
 	_server *model.Server
+	cnt     int
 }
 
 // NewDenService (､´･ω･)▄︻┻┳═一
@@ -63,16 +64,20 @@ func (srv *denService) Entry(ws *websocket.Conn) error {
 
 	roomRepo := model.NewRoomRepository(srv.core)
 
-	room, err := roomRepo.FindByCode(roomCode)
+	userRoom, err := roomRepo.FindByCode(roomCode)
 	if err != nil {
 		return errors.Wrapf(err, "error find room by code:%d", roomCode)
 	}
 
-	if room.OwnerIs(user) {
-		srv._server.Launch(room)
-	}
-	if !srv._server.IsLaunched(room) {
-		return errors.Errorf("room:%s is not launched on server", roomCode)
+	var room *model.Room
+	if userRoom.OwnerIs(user) {
+		room = srv._server.Launch(userRoom)
+	} else {
+		r := srv._server.LaunchedRoom(roomCode)
+		if r == nil {
+			return errors.Errorf("room:%s is not launched on server", roomCode)
+		}
+		room = r
 	}
 
 	if err := room.Entry(ws, user); err != nil {

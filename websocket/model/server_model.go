@@ -1,7 +1,6 @@
 package model
 
 import (
-	"fmt"
 	"log"
 
 	"github.com/uenoryo/chitoi/core"
@@ -9,28 +8,28 @@ import (
 
 // Server (､´･ω･)▄︻┻┳═一
 type Server struct {
-	core      *core.Core
-	doneCh    chan bool
-	errCh     chan error
-	sendAllCh chan string
-	clients   map[uint64]*Client
-	rooms     map[uint32]*Room
+	core        *core.Core
+	doneCh      chan bool
+	errCh       chan error
+	broadCastCh chan *Packet
+	clients     map[uint64]*Client
+	rooms       map[uint32]*Room
 }
 
 // NewServer (､´･ω･)▄︻┻┳═一
 func NewServer(core *core.Core) *Server {
 	var (
-		doneCh    = make(chan bool)
-		errCh     = make(chan error)
-		sendAllCh = make(chan string)
-		clients   = make(map[uint64]*Client)
-		rooms     = make(map[uint32]*Room)
+		doneCh      = make(chan bool)
+		errCh       = make(chan error)
+		broadCastCh = make(chan *Packet)
+		clients     = make(map[uint64]*Client)
+		rooms       = make(map[uint32]*Room)
 	)
 	return &Server{
 		core,
 		doneCh,
 		errCh,
-		sendAllCh,
+		broadCastCh,
 		clients,
 		rooms,
 	}
@@ -46,28 +45,28 @@ func (s *Server) Listen() {
 		case <-s.doneCh:
 			return
 
-		case msg := <-s.sendAllCh:
-			log.Println("Send all:", msg)
-			for id, client := range s.clients {
-				client.Write(fmt.Sprintf("message: %s, id:%d", msg, id))
+		case packet := <-s.broadCastCh:
+			if room, ok := s.rooms[packet.RoomCode]; ok {
+				room.SendToMembers(packet)
 			}
 		}
 	}
 }
 
 // Launch はserverにroomを立てます
-func (s *Server) Launch(room *Room) {
-	if s.IsLaunched(room) {
-		return
+func (s *Server) Launch(room *Room) *Room {
+	if exists, ok := s.rooms[room.Row.Code]; ok {
+		return exists
 	}
 	room.RegisterServer(s)
 	s.rooms[room.Row.Code] = room
+	return room
 }
 
-// IsLaunched はserverにroomが立っているかどうかを返す
-func (s *Server) IsLaunched(room *Room) bool {
-	_, isLaunched := s.rooms[room.Row.Code]
-	return isLaunched
+// LaunchedRoom は roomCode の room を返す
+// 起動していなければ nil を返す
+func (s *Server) LaunchedRoom(roomCode uint32) *Room {
+	return s.rooms[roomCode]
 }
 
 // Add は client を server に追加する
@@ -76,9 +75,9 @@ func (s *Server) Add(client *Client) {
 	s.clients[client.ID] = client
 }
 
-// SendAll は全ての client にメッセージを送信する
-func (s *Server) SendAll(msg string) {
-	s.sendAllCh <- msg
+// Receive はroom codeの部屋のメンバーにpacketを送信する
+func (s *Server) Receive(packet *Packet) {
+	s.broadCastCh <- packet
 }
 
 // Err はserverにerrを通知する
