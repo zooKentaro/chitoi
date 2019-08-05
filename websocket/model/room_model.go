@@ -2,7 +2,6 @@ package model
 
 import (
 	"database/sql"
-	"fmt"
 	"time"
 
 	"github.com/pkg/errors"
@@ -109,14 +108,17 @@ func (r *Room) ListenAllClients() {
 	}
 }
 
-func (r *Room) Submit(packet *Packet) {
+func (r *Room) Submit(packet *Packet) error {
 	packet.RoomCode = r.Row.Code
-	server, _ := r.Server()
-	if server != nil {
-		server.Receive(packet)
-	} else {
-		fmt.Println("ないよ")
+	server, err := r.Server()
+	if err != nil {
+		return errors.Wrap(err, "error get server")
 	}
+	if err := server.Validate(packet); err != nil {
+		return errors.Wrap(err, "failed validate packet")
+	}
+	server.Receive(packet)
+	return nil
 }
 
 func (r *Room) SendToMembers(packet *Packet) {

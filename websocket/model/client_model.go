@@ -73,7 +73,9 @@ func (c *Client) Listen() {
 					server.Err(err)
 				}
 			default:
-				c.room.Submit(packet)
+				if err := c.room.Submit(packet); err != nil {
+					fmt.Println("[ERROR] invalid packet", err.Error())
+				}
 			}
 		}
 	}

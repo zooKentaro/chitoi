@@ -3,6 +3,7 @@ package model
 import (
 	"log"
 
+	"github.com/pkg/errors"
 	"github.com/uenoryo/chitoi/core"
 )
 
@@ -78,6 +79,23 @@ func (s *Server) Add(client *Client) {
 // Receive はroom codeの部屋のメンバーにpacketを送信する
 func (s *Server) Receive(packet *Packet) {
 	s.broadCastCh <- packet
+}
+
+func (s *Server) Validate(packet *Packet) error {
+	if packet.RoomCode == 0 {
+		return errors.New("error room code is empty")
+	}
+	if packet.SenderID == 0 {
+		return errors.New("error sender id (user id) is empty")
+	}
+	room, ok := s.rooms[packet.RoomCode]
+	if !ok {
+		return errors.Errorf("invalid room code:%d", packet.RoomCode)
+	}
+	if _, ok := room.Clients[packet.SenderID]; !ok {
+		return errors.Errorf("invalid sender id:%d", packet.SenderID)
+	}
+	return nil
 }
 
 // Err はserverにerrを通知する
