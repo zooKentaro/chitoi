@@ -53,6 +53,7 @@ func (repo *RoomRepository) Save(room *Room) error {
 type Room struct {
 	core    *core.Core
 	Row     *row.Room
+	server  *Server
 	Clients map[uint64]*Client
 }
 
@@ -60,8 +61,20 @@ func NewRoom(core *core.Core, row *row.Room) *Room {
 	return &Room{
 		core,
 		row,
+		nil,
 		make(map[uint64]*Client),
 	}
+}
+
+func (r *Room) RegisterServer(server *Server) {
+	r.server = server
+}
+
+func (r *Room) Server() (*Server, error) {
+	if r.server == nil {
+		return nil, errors.Errorf("room is not registered server")
+	}
+	return r.server, nil
 }
 
 // OwnerIs は user が room のオーナーかどうかを返す

@@ -41,7 +41,7 @@ func (s *Server) Listen() {
 	for {
 		select {
 		case err := <-s.errCh:
-			log.Println("Error:", err.Error())
+			log.Println("[ERROR]", err.Error())
 
 		case <-s.doneCh:
 			return
@@ -60,6 +60,7 @@ func (s *Server) Launch(room *Room) {
 	if s.IsLaunched(room) {
 		return
 	}
+	room.RegisterServer(s)
 	s.rooms[room.Row.Code] = room
 }
 

@@ -57,15 +57,20 @@ func (c *Client) Listen() {
 			return
 
 		default:
-			var data []byte
-			err := websocket.Message.Receive(c.ws, &data)
+			packet := Packet{}
+			err := websocket.JSON.Receive(c.ws, &packet)
 			switch {
 			case err == io.EOF:
 				fmt.Println("close listenning for reading, id:", c.ID)
 				c.doneCh <- true
 				return
 			case err != nil:
-				// c.server.Err(err)
+				server, err2 := c.room.Server()
+				if err2 != nil {
+					fmt.Println("[ERROR] error ocurred in room, but failed to get server", err2.Error())
+				} else {
+					server.Err(err)
+				}
 			default:
 				// c.server.SendAll(string(data))
 			}
