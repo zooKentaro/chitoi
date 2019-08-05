@@ -20,8 +20,9 @@ type Client struct {
 
 // Packet は送受信1回分のデータ
 type Packet struct {
-	SenderID   uint64 `json:"sender_id,string"`
+	SessionID  string `json:"session_id"`
 	ActionType uint32 `json:"action_type"`
+	SenderID   uint64
 	RoomCode   uint32
 }
 
@@ -73,9 +74,21 @@ func (c *Client) Listen() {
 					server.Err(err)
 				}
 			default:
-				if err := c.room.Submit(packet); err != nil {
-					fmt.Println("[ERROR] invalid packet", err.Error())
+				userID, err := c.room.Authenticate(packet.SessionID)
+				if err != nil {
+					server, err2 := c.room.Server()
+					if err2 != nil {
+						fmt.Println("[ERROR] error ocurred in room, but failed to get server", err2.Error())
+					} else {
+						server.Err(err)
+					}
+				} else {
+					packet.SenderID = userID
+					if err := c.room.Submit(packet); err != nil {
+						fmt.Println("[ERROR] invalid packet", err.Error())
+					}
 				}
+
 			}
 		}
 	}

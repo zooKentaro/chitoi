@@ -80,7 +80,7 @@ func (srv *denService) Entry(ws *websocket.Conn) error {
 		room = r
 	}
 
-	if err := room.Entry(ws, user); err != nil {
+	if err := room.Entry(ws, user, sessionID); err != nil {
 		return errors.Wrapf(err, "error entry room, room code:%s", roomCode)
 	}
 	if err := roomRepo.Save(room); err != nil {

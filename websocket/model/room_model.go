@@ -51,10 +51,11 @@ func (repo *RoomRepository) Save(room *Room) error {
 }
 
 type Room struct {
-	core    *core.Core
-	Row     *row.Room
-	server  *Server
-	Clients map[uint64]*Client
+	core           *core.Core
+	Row            *row.Room
+	server         *Server
+	Clients        map[uint64]*Client
+	authentication map[string]uint64
 }
 
 func NewRoom(core *core.Core, row *row.Room) *Room {
@@ -63,6 +64,7 @@ func NewRoom(core *core.Core, row *row.Room) *Room {
 		row,
 		nil,
 		make(map[uint64]*Client),
+		make(map[string]uint64),
 	}
 }
 
@@ -83,7 +85,7 @@ func (r *Room) OwnerIs(user *model.User) bool {
 }
 
 // Entry はroomにuserを入室させる
-func (r *Room) Entry(ws *websocket.Conn, user *model.User) error {
+func (r *Room) Entry(ws *websocket.Conn, user *model.User, sessionID string) error {
 	switch {
 	case r.isAlreadyEntried(user):
 		break
@@ -96,6 +98,8 @@ func (r *Room) Entry(ws *websocket.Conn, user *model.User) error {
 	}
 	r.Clients[user.Row.ID] = NewClient(ws, r, user)
 
+	// TODO: 本来はEntryした時にTokenを生成して返し、以降の通信ではそれを利用する形にする
+	r.authentication[sessionID] = user.Row.ID
 	return nil
 }
 
@@ -106,6 +110,14 @@ func (r *Room) ListenAllClients() {
 		}
 		client.Listen()
 	}
+}
+
+func (r *Room) Authenticate(sessionID string) (uint64, error) {
+	userID, ok := r.authentication[sessionID]
+	if !ok {
+		return 0, errors.New("unauthorized user")
+	}
+	return userID, nil
 }
 
 func (r *Room) Submit(packet *Packet) error {
