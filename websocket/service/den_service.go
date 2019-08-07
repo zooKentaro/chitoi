@@ -82,7 +82,7 @@ func (srv *denService) Entry(ws *websocket.Conn) error {
 	} else {
 		r := srv._server.LaunchedRoom(roomCode)
 		if r == nil {
-			return errors.Errorf("room:%s is not launched on server", roomCode)
+			return errors.Errorf("room:%d is not launched on server", roomCode)
 		}
 		room = r
 	}
