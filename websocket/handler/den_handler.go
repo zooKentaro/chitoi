@@ -1,6 +1,7 @@
 package handler
 
 import (
+	"log"
 	"net/http"
 
 	"github.com/uenoryo/chitoi/core"
@@ -32,6 +33,7 @@ func NewDenServer(h *DenHandler) *http.ServeMux {
 // EntryHandler is XXX
 func (h *DenHandler) EntryHandler(ws *websocket.Conn) {
 	if err := h.Service.Entry(ws); err != nil {
+		log.Println("[ERROR] ", err.Error())
 		WriteError400or500(ws, err)
 	}
 }

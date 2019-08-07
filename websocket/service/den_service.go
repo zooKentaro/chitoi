@@ -11,8 +11,8 @@ import (
 )
 
 const (
-	UserSessionHeaderKey = "X-CHITOI-SESSION"
-	RoomCodeHeaderKey    = "X-CHITOI-ROOM-CODE"
+	SessionIDKey = "SESSION-ID"
+	RoomCodeKey  = "ROOM-CODE"
 )
 
 type DenService interface {
@@ -47,13 +47,20 @@ func (srv *denService) Listener() Listener {
 
 // Entry は client を作成し、websocketで server と接続する
 func (srv *denService) Entry(ws *websocket.Conn) error {
-	var (
-		sessionID   = ws.Request().Header.Get(UserSessionHeaderKey)
-		roomCodeStr = ws.Request().Header.Get(RoomCodeHeaderKey)
-	)
-	roomCodeInt, err := strconv.Atoi(roomCodeStr)
+	sessionIDCookie, err := ws.Request().Cookie(SessionIDKey)
 	if err != nil {
-		return errors.Errorf("invalid room code:%s", roomCodeStr)
+		return errors.Wrapf(err, "error get session id from cookie, key:%s", SessionIDKey)
+	}
+	sessionID := sessionIDCookie.Value
+
+	roomCodeCookie, err := ws.Request().Cookie(RoomCodeKey)
+	if err != nil {
+		return errors.Wrapf(err, "error get room code from cookie, key:%s", RoomCodeKey)
+	}
+
+	roomCodeInt, err := strconv.Atoi(roomCodeCookie.Value)
+	if err != nil {
+		return errors.Errorf("invalid room code:%s", roomCodeCookie.Value)
 	}
 	roomCode := uint32(roomCodeInt)
 
