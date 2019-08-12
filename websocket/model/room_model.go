@@ -151,6 +151,18 @@ func (r *Room) Submit(packet *Packet) error {
 	return nil
 }
 
+// SubmitOnExitPlayer は player の退出状況を伝えるためにbloadcastする
+// 通信切断時にも呼ばれる => SessionID等受け取れないので認証できない
+func (r *Room) SubmitOnExitPlayer(packet *Packet) error {
+	packet.RoomCode = r.Row.Code
+	server, err := r.Server()
+	if err != nil {
+		return errors.Wrap(err, "error get server")
+	}
+	server.Receive(packet)
+	return nil
+}
+
 func (r *Room) SendToMembers(packet *BloadcastPacket) {
 	for _, member := range r.Clients {
 		member.Receive(packet)

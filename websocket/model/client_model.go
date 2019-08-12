@@ -76,6 +76,9 @@ func (c *Client) Listen() {
 			case err == io.EOF:
 				fmt.Println("close listenning for reading, player id:", c.Player.Row.ID)
 				c.room.PushOut(c)
+				if err := c.room.SubmitOnExitPlayer(packet); err != nil {
+					fmt.Println("[ERROR] submit on exit player failed", err.Error())
+				}
 				c.doneCh <- true
 				return
 			case err != nil:
