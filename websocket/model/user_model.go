@@ -1,6 +1,7 @@
 package model
 
 import (
+	"github.com/jmoiron/sqlx"
 	"github.com/pkg/errors"
 	"github.com/uenoryo/chitoi/core"
 	"github.com/uenoryo/chitoi/database/row"
@@ -28,7 +29,11 @@ func (repo *UserRepository) FindByIDs(ids []uint64) ([]*User, error) {
 	}
 
 	rows := make([]*row.User, 0, len(ids))
-	if err := repo.core.DB.Get(&rows, FindUserByIDsSQL, ids); err != nil {
+	query, args, err := sqlx.In(FindUserByIDsSQL, ids)
+	if err != nil {
+		return nil, errors.Wrapf(err, "error build query, sql: %s, args: %v", FindUserByIDsSQL, ids)
+	}
+	if err := repo.core.DB.Select(&rows, query, args...); err != nil {
 		return nil, errors.Wrapf(err, "error find user by id: %v, sql: %s", ids, FindUserByIDsSQL)
 	}
 
@@ -53,6 +58,6 @@ func NewUser(core *core.Core, row *row.User) *User {
 	}
 }
 
-func NewUserFromAPIUesr(core *core.Core, user *apimodel.User) *User {
+func NewUserFromAPIUser(core *core.Core, user *apimodel.User) *User {
 	return NewUser(core, user.Row)
 }

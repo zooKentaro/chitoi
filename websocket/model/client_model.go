@@ -5,20 +5,20 @@ import (
 	"io"
 	"log"
 
-	"github.com/uenoryo/chitoi/model"
+	"github.com/uenoryo/chitoi/database/row"
 	"golang.org/x/net/websocket"
 )
 
 type Client struct {
 	ws          *websocket.Conn
 	room        *Room
-	ID          uint64
+	Player      *User
 	IsListening bool
-	ch          chan *Packet
+	ch          chan *BloadcastPacket
 	doneCh      chan bool
 }
 
-// Packet は送受信1回分のデータ
+// Packet は各クライアントから送信される1回分のデータ
 type Packet struct {
 	SessionID  string `json:"session_id"`
 	ActionType uint32 `json:"action_type"`
@@ -26,19 +26,30 @@ type Packet struct {
 	RoomCode   uint32
 }
 
-func NewClient(ws *websocket.Conn, room *Room, user *model.User) *Client {
+// BloadcastPacket は全体に送信するデータ
+type BloadcastPacket struct {
+	*Packet
+	Player1 *row.User `json:"player1"`
+	Player2 *row.User `json:"player2"`
+}
+
+func NewClient(ws *websocket.Conn, room *Room, player *User) *Client {
 	var (
 		doneCh = make(chan bool)
-		ch     = make(chan *Packet)
+		ch     = make(chan *BloadcastPacket)
 	)
 	return &Client{
-		ID:          user.Row.ID,
+		Player:      player,
 		IsListening: false,
 		ws:          ws,
 		room:        room,
 		ch:          ch,
 		doneCh:      doneCh,
 	}
+}
+
+func (c *Client) ID() uint64 {
+	return c.Player.Row.ID
 }
 
 func (c *Client) Listen() {
@@ -63,7 +74,7 @@ func (c *Client) Listen() {
 			err := websocket.JSON.Receive(c.ws, &packet)
 			switch {
 			case err == io.EOF:
-				fmt.Println("close listenning for reading, id:", c.ID)
+				fmt.Println("close listenning for reading, player id:", c.Player.Row.ID)
 				c.doneCh <- true
 				return
 			case err != nil:
@@ -106,13 +117,13 @@ func (c *Client) listenWrite() {
 
 		// receive done request
 		case <-c.doneCh:
-			fmt.Println("close listenning for writing, id:", c.ID)
+			fmt.Println("close listenning for writing, player id:", c.Player.Row.ID)
 			return
 		}
 	}
 }
 
-func (c *Client) Receive(packet *Packet) {
+func (c *Client) Receive(packet *BloadcastPacket) {
 	select {
 	case c.ch <- packet:
 		log.Println(packet, "を受け取ったよ！")

@@ -5,6 +5,7 @@ import (
 
 	"github.com/pkg/errors"
 	"github.com/uenoryo/chitoi/core"
+	"github.com/uenoryo/chitoi/database/row"
 )
 
 // Server (､´･ω･)▄︻┻┳═一
@@ -12,8 +13,7 @@ type Server struct {
 	core        *core.Core
 	doneCh      chan bool
 	errCh       chan error
-	broadCastCh chan *Packet
-	clients     map[uint64]*Client
+	broadCastCh chan *BloadcastPacket
 	rooms       map[uint32]*Room
 }
 
@@ -22,8 +22,7 @@ func NewServer(core *core.Core) *Server {
 	var (
 		doneCh      = make(chan bool)
 		errCh       = make(chan error)
-		broadCastCh = make(chan *Packet)
-		clients     = make(map[uint64]*Client)
+		broadCastCh = make(chan *BloadcastPacket)
 		rooms       = make(map[uint32]*Room)
 	)
 	return &Server{
@@ -31,7 +30,6 @@ func NewServer(core *core.Core) *Server {
 		doneCh,
 		errCh,
 		broadCastCh,
-		clients,
 		rooms,
 	}
 }
@@ -70,15 +68,29 @@ func (s *Server) LaunchedRoom(roomCode uint32) *Room {
 	return s.rooms[roomCode]
 }
 
-// Add は client を server に追加する
-func (s *Server) Add(client *Client) {
-	log.Println("ADDED")
-	s.clients[client.ID] = client
-}
-
 // Receive はroom codeの部屋のメンバーにpacketを送信する
 func (s *Server) Receive(packet *Packet) {
-	s.broadCastCh <- packet
+	room, ok := s.rooms[packet.RoomCode]
+	if !ok {
+		return
+	}
+
+	var (
+		player1 *row.User
+		player2 *row.User
+	)
+	if client, ok := room.Clients[room.Player1.Row.ID]; ok {
+		player1 = client.Player.Row
+	}
+	if client, ok := room.Clients[room.Player2.Row.ID]; ok {
+		player2 = client.Player.Row
+	}
+	bloadcastPacket := &BloadcastPacket{
+		packet,
+		player1,
+		player2,
+	}
+	s.broadCastCh <- bloadcastPacket
 }
 
 func (s *Server) Validate(packet *Packet) error {

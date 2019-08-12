@@ -97,16 +97,16 @@ func (r *Room) OwnerIs(user *model.User) bool {
 }
 
 // Entry はroomにuserを入室させる
-func (r *Room) Entry(ws *websocket.Conn, user *model.User, sessionID string) error {
+func (r *Room) Entry(ws *websocket.Conn, user *User, sessionID string) error {
 	switch {
 	case r.isAlreadyEntried(user):
 		break
 	case r.Row.Player1ID == 0:
 		r.Row.Player1ID = user.Row.ID
-		r.Player1 = NewUserFromAPIUesr(r.core, user)
+		r.Player1 = user
 	case r.Row.Player2ID == 0:
 		r.Row.Player2ID = user.Row.ID
-		r.Player2 = NewUserFromAPIUesr(r.core, user)
+		r.Player2 = user
 	default:
 		return ErrRoomHasNoVacancie
 	}
@@ -147,16 +147,13 @@ func (r *Room) Submit(packet *Packet) error {
 	return nil
 }
 
-func (r *Room) SendToMembers(packet *Packet) {
+func (r *Room) SendToMembers(packet *BloadcastPacket) {
 	for _, member := range r.Clients {
-		if packet.SenderID == member.ID {
-			continue
-		}
 		member.Receive(packet)
 	}
 }
 
-func (r *Room) isAlreadyEntried(user *model.User) bool {
+func (r *Room) isAlreadyEntried(user *User) bool {
 	switch user.Row.ID {
 	case r.Row.Player1ID, r.Row.Player2ID:
 		return true
