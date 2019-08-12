@@ -4,6 +4,7 @@ import (
 	"github.com/pkg/errors"
 	"github.com/uenoryo/chitoi/core"
 	"github.com/uenoryo/chitoi/database/row"
+	apimodel "github.com/uenoryo/chitoi/model"
 )
 
 const (
@@ -50,4 +51,8 @@ func NewUser(core *core.Core, row *row.User) *User {
 		core,
 		row,
 	}
+}
+
+func NewUserFromAPIUesr(core *core.Core, user *apimodel.User) *User {
+	return NewUser(core, user.Row)
 }
