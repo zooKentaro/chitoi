@@ -61,6 +61,10 @@ func (c *Client) Listen() {
 	go c.listenWrite()
 
 	log.Println("Listening read from client")
+
+	if err := c.room.SubmitOnEnterPlayer(); err != nil {
+		fmt.Println("[ERROR] submit on exit player failed", err.Error())
+	}
 	for {
 		select {
 

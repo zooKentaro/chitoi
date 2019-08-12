@@ -163,6 +163,19 @@ func (r *Room) SubmitOnExitPlayer(packet *Packet) error {
 	return nil
 }
 
+// SubmitOnExitPlayer は player の退出状況を伝えるためにbloadcastする
+// 認証後に呼ばれるので認証しない
+func (r *Room) SubmitOnEnterPlayer() error {
+	packet := &Packet{}
+	packet.RoomCode = r.Row.Code
+	server, err := r.Server()
+	if err != nil {
+		return errors.Wrap(err, "error get server")
+	}
+	server.Receive(packet)
+	return nil
+}
+
 func (r *Room) SendToMembers(packet *BloadcastPacket) {
 	for _, member := range r.Clients {
 		member.Receive(packet)
