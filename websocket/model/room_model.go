@@ -37,9 +37,17 @@ func (repo *RoomRepository) FindByCode(code uint32) (*Room, error) {
 		return nil, errors.Errorf("room code:%d is not found", code)
 	case err != nil:
 		return nil, errors.Wrapf(err, "error find room by code, sql:%s", FindRoomByCodeSQL)
-	default:
-		return NewRoom(repo.core, &row), nil
 	}
+
+	users, err := NewUserRepository(repo.core).FindByIDs(row.PlayerIDs())
+	if err != nil {
+		return nil, errors.Wrap(err, "find room player failed")
+	}
+	userByID := make(map[uint64]*User, len(users))
+	for _, u := range users {
+		userByID[u.Row.ID] = u
+	}
+	return NewRoom(repo.core, &row, userByID[row.Player1ID], userByID[row.Player2ID]), nil
 }
 
 // Save (､´･ω･)▄︻┻┳═一
@@ -56,15 +64,19 @@ type Room struct {
 	server         *Server
 	Clients        map[uint64]*Client
 	authentication map[string]uint64
+	Player1        *User
+	Player2        *User
 }
 
-func NewRoom(core *core.Core, row *row.Room) *Room {
+func NewRoom(core *core.Core, row *row.Room, player1, player2 *User) *Room {
 	return &Room{
 		core,
 		row,
 		nil,
 		make(map[uint64]*Client),
 		make(map[string]uint64),
+		player1,
+		player2,
 	}
 }
 
