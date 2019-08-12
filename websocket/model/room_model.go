@@ -103,8 +103,10 @@ func (r *Room) Entry(ws *websocket.Conn, user *model.User, sessionID string) err
 		break
 	case r.Row.Player1ID == 0:
 		r.Row.Player1ID = user.Row.ID
+		r.Player1 = NewUserFromAPIUesr(r.core, user)
 	case r.Row.Player2ID == 0:
 		r.Row.Player2ID = user.Row.ID
+		r.Player2 = NewUserFromAPIUesr(r.core, user)
 	default:
 		return ErrRoomHasNoVacancie
 	}
