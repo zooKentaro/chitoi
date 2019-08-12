@@ -22,6 +22,10 @@ type UserRepository struct {
 
 // FindByIDs は ids の user を取得する
 func (repo *UserRepository) FindByIDs(ids []uint64) ([]*User, error) {
+	if len(ids) == 0 {
+		return []*User{}, nil
+	}
+
 	rows := make([]*row.User, 0, len(ids))
 	if err := repo.core.DB.Get(&rows, FindUserByIDsSQL, ids); err != nil {
 		return nil, errors.Wrapf(err, "error find user by id: %v, sql: %s", ids, FindUserByIDsSQL)
