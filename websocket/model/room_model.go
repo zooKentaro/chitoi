@@ -117,6 +117,10 @@ func (r *Room) Entry(ws *websocket.Conn, user *User, sessionID string) error {
 	return nil
 }
 
+func (r *Room) PushOut(client *Client) {
+	delete(r.Clients, client.ID())
+}
+
 func (r *Room) ListenAllClients() {
 	for _, client := range r.Clients {
 		if client.IsListening {

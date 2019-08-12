@@ -75,6 +75,7 @@ func (c *Client) Listen() {
 			switch {
 			case err == io.EOF:
 				fmt.Println("close listenning for reading, player id:", c.Player.Row.ID)
+				c.room.PushOut(c)
 				c.doneCh <- true
 				return
 			case err != nil:
