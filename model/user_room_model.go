@@ -13,6 +13,7 @@ import (
 
 const (
     InsertRoomSQL           = "INSERT INTO `room` (`id`, `code`, `owner_id`, `player1_id`, `player2_id`, `player3_id`, `player4_id`, `created_at`, `expired_at`) VALUES (?,?,?,?,?,?,?,?,?)"
+    CleanRoomSQL            = "DELETE FROM `room` WHERE owner_id = ?"
     CountValidRoomByCodeSQL = "SELECT count(*) FROM room WHERE code = ? AND expired_at > ?"
 )
 
@@ -50,6 +51,14 @@ func (ur *UserRoom) Create() (*Room, error) {
         core: ur.core,
         Row:  room,
     }, nil
+}
+
+// Clean は自身がオーナーである部屋を一掃する
+func (ur *UserRoom) Clean() error {
+    if _, err := ur.core.DB.Exec(CleanRoomSQL, ur.user.Row.ID); err != nil {
+        return errors.Wrapf(err, "error delete room, sql:%s", CleanRoomSQL)
+    }
+    return nil
 }
 
 func (ur *UserRoom) generateRoomCode() (uint32, error) {

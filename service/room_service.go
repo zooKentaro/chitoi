@@ -28,6 +28,10 @@ func (s *roomService) Create(req *data.RoomCreateRequest) (*data.RoomCreateRespo
         return nil, errors.Wrap(err, "error authenticate user")
     }
 
+    if err := user.Room.Clean(); err != nil {
+        return nil, errors.Wrap(err, "clean user room failed")
+    }
+
     room, err := user.Room.Create()
     if err != nil {
         return nil, errors.Wrap(err, "create user room failed")
