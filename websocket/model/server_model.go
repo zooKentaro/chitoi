@@ -79,11 +79,15 @@ func (s *Server) Receive(packet *Packet) {
 		player1 *row.User
 		player2 *row.User
 	)
-	if client, ok := room.Clients[room.Player1.Row.ID]; ok {
-		player1 = client.Player.Row
+	if room.Player1 != nil {
+		if client, ok := room.Clients[room.Player1.Row.ID]; ok {
+			player1 = client.Player.Row
+		}
 	}
-	if client, ok := room.Clients[room.Player2.Row.ID]; ok {
-		player2 = client.Player.Row
+	if room.Player2 != nil {
+		if client, ok := room.Clients[room.Player2.Row.ID]; ok {
+			player2 = client.Player.Row
+		}
 	}
 	bloadcastPacket := &BloadcastPacket{
 		packet,
