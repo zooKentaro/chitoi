@@ -2,13 +2,18 @@ package packet
 
 import "github.com/uenoryo/chitoi/database/row"
 
-// RequestPacket は各クライアントから送信される1回分のデータ
 const (
+	// ActionTypeUndefined ...
 	ActionTypeUndefined = iota
+
+	// ActionTypeEntryAsHost ...
 	ActionTypeEntryAsHost
+
+	// ActionTypeEntryAsGuest ...
 	ActionTypeEntryAsGuest
 )
 
+// RequestPacket は各クライアントから送信される1回分のデータ
 type RequestPacket struct {
 	SessionID  string     `json:"session_id"`
 	ActionType ActionType `json:"action_type"`
@@ -23,6 +28,7 @@ type BloadcastPacket struct {
 	Player2 *row.User `json:"player2"`
 }
 
+// ActionType ...
 type ActionType int
 
 // IsUndefined ...
