@@ -39,12 +39,7 @@ func (at ActionType) IsUndefined() bool {
 	return int(at) == ActionTypeUndefined
 }
 
-// IsEntryAsHost ...
-func (at ActionType) IsEntryAsHost() bool {
-	return int(at) == ActionTypeEntryAsHost
-}
-
-// IsEntryAsGuest ...
-func (at ActionType) IsEntryAsGuest() bool {
-	return int(at) == ActionTypeEntryAsGuest
+// IsSetupGame ...
+func (at ActionType) IsSetupGame() bool {
+	return int(at) == ActionTypeSetupGame
 }
