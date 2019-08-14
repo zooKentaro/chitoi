@@ -17,6 +17,7 @@ type RequestPacket struct {
 	SenderID  uint64
 	RoomCode  uint32
 	*SetupGameRequestPacket
+	*GameActionRequest
 }
 
 // BloadcastPacket は全体に送信するデータ
@@ -29,6 +30,12 @@ type BloadcastPacket struct {
 type SetupGameRequestPacket struct {
 	Deck      []*Deck
 	TurnTable TurnTable
+}
+
+type GameActionRequest struct {
+	ActionType   uint32
+	Mark         uint32
+	PutCardIndex uint32
 }
 
 // Method ...
