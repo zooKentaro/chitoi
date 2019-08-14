@@ -19,6 +19,7 @@ type RequestPacket struct {
 	ActionType ActionType `json:"action_type"`
 	SenderID   uint64
 	RoomCode   uint32
+	*SetupGameRequestPacket
 }
 
 // BloadcastPacket は全体に送信するデータ
