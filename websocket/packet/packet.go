@@ -28,6 +28,10 @@ type BloadcastPacket struct {
 	Player2 *row.User `json:"player2"`
 }
 
+type SetupGameRequestPacket struct {
+	Deck []*Deck
+}
+
 // ActionType ...
 type ActionType int
 
