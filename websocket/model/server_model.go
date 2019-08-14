@@ -70,8 +70,8 @@ func (s *Server) LaunchedRoom(roomCode uint32) *Room {
 }
 
 // Receive はroom codeの部屋のメンバーにpacketを送信する
-func (s *Server) Receive(pkt *packet.Packet) {
-	room, ok := s.rooms[pkt.RoomCode]
+func (s *Server) Receive(request *packet.RequestPacket) {
+	room, ok := s.rooms[request.RoomCode]
 	if !ok {
 		return
 	}
@@ -91,26 +91,26 @@ func (s *Server) Receive(pkt *packet.Packet) {
 		}
 	}
 	bloadcastPacket := &packet.BloadcastPacket{
-		pkt,
+		request,
 		player1,
 		player2,
 	}
 	s.broadCastCh <- bloadcastPacket
 }
 
-func (s *Server) Validate(pkt *packet.Packet) error {
-	if pkt.RoomCode == 0 {
+func (s *Server) Validate(request *packet.RequestPacket) error {
+	if request.RoomCode == 0 {
 		return errors.New("error room code is empty")
 	}
-	if pkt.SenderID == 0 {
+	if request.SenderID == 0 {
 		return errors.New("error sender id (user id) is empty")
 	}
-	room, ok := s.rooms[pkt.RoomCode]
+	room, ok := s.rooms[request.RoomCode]
 	if !ok {
-		return errors.Errorf("invalid room code:%d", pkt.RoomCode)
+		return errors.Errorf("invalid room code:%d", request.RoomCode)
 	}
-	if _, ok := room.Clients[pkt.SenderID]; !ok {
-		return errors.Errorf("invalid sender id:%d", pkt.SenderID)
+	if _, ok := room.Clients[request.SenderID]; !ok {
+		return errors.Errorf("invalid sender id:%d", request.SenderID)
 	}
 	return nil
 }

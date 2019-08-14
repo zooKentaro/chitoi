@@ -59,13 +59,13 @@ func (c *Client) Listen() {
 			return
 
 		default:
-			pkt := &packet.Packet{}
-			err := websocket.JSON.Receive(c.ws, &pkt)
+			request := &packet.RequestPacket{}
+			err := websocket.JSON.Receive(c.ws, &request)
 			switch {
 			case err == io.EOF:
 				fmt.Println("close listenning for reading, player id:", c.Player.Row.ID)
 				c.room.PushOut(c)
-				if err := c.room.SubmitOnExitPlayer(pkt); err != nil {
+				if err := c.room.SubmitOnExitPlayer(request); err != nil {
 					fmt.Println("[ERROR] submit on exit player failed", err.Error())
 				}
 				c.doneCh <- true
@@ -78,7 +78,7 @@ func (c *Client) Listen() {
 					server.Err(err)
 				}
 			default:
-				userID, err := c.room.Authenticate(pkt.SessionID)
+				userID, err := c.room.Authenticate(request.SessionID)
 				if err != nil {
 					server, err2 := c.room.Server()
 					if err2 != nil {
@@ -87,8 +87,8 @@ func (c *Client) Listen() {
 						server.Err(err)
 					}
 				} else {
-					pkt.SenderID = userID
-					if err := c.room.Submit(pkt); err != nil {
+					request.SenderID = userID
+					if err := c.room.Submit(request); err != nil {
 						fmt.Println("[ERROR] invalid packet", err.Error())
 					}
 				}

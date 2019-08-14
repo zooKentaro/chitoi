@@ -139,41 +139,41 @@ func (r *Room) Authenticate(sessionID string) (uint64, error) {
 	return userID, nil
 }
 
-func (r *Room) Submit(pkt *packet.Packet) error {
-	pkt.RoomCode = r.Row.Code
+func (r *Room) Submit(request *packet.RequestPacket) error {
+	request.RoomCode = r.Row.Code
 	server, err := r.Server()
 	if err != nil {
 		return errors.Wrap(err, "error get server")
 	}
-	if err := server.Validate(pkt); err != nil {
+	if err := server.Validate(request); err != nil {
 		return errors.Wrap(err, "failed validate packet")
 	}
-	server.Receive(pkt)
+	server.Receive(request)
 	return nil
 }
 
 // SubmitOnExitPlayer は player の退出状況を伝えるためにbloadcastする
 // 通信切断時にも呼ばれる => SessionID等受け取れないので認証できない
-func (r *Room) SubmitOnExitPlayer(pkt *packet.Packet) error {
-	pkt.RoomCode = r.Row.Code
+func (r *Room) SubmitOnExitPlayer(request *packet.RequestPacket) error {
+	request.RoomCode = r.Row.Code
 	server, err := r.Server()
 	if err != nil {
 		return errors.Wrap(err, "error get server")
 	}
-	server.Receive(pkt)
+	server.Receive(request)
 	return nil
 }
 
 // SubmitOnExitPlayer は player の退出状況を伝えるためにbloadcastする
 // 認証後に呼ばれるので認証しない
 func (r *Room) SubmitOnEnterPlayer() error {
-	pkt := &packet.Packet{}
-	pkt.RoomCode = r.Row.Code
+	request := &packet.RequestPacket{}
+	request.RoomCode = r.Row.Code
 	server, err := r.Server()
 	if err != nil {
 		return errors.Wrap(err, "error get server")
 	}
-	server.Receive(pkt)
+	server.Receive(request)
 	return nil
 }
 
