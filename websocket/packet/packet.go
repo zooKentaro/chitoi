@@ -6,11 +6,8 @@ const (
 	// ActionTypeUndefined ...
 	ActionTypeUndefined = iota
 
-	// ActionTypeEntryAsHost ...
-	ActionTypeEntryAsHost
-
-	// ActionTypeEntryAsGuest ...
-	ActionTypeEntryAsGuest
+	// ActionTypeSetupGame ...
+	ActionTypeSetupGame
 )
 
 // RequestPacket は各クライアントから送信される1回分のデータ
