@@ -3,19 +3,19 @@ package packet
 import "github.com/uenoryo/chitoi/database/row"
 
 const (
-	// ActionTypeUndefined ...
-	ActionTypeUndefined = iota
+	// MethodUndefined ...
+	MethodUndefined = iota
 
-	// ActionTypeSetupGame ...
-	ActionTypeSetupGame
+	// MethodSetupGame ...
+	MethodSetupGame
 )
 
 // RequestPacket は各クライアントから送信される1回分のデータ
 type RequestPacket struct {
-	SessionID  string     `json:"session_id"`
-	ActionType ActionType `json:"action_type"`
-	SenderID   uint64
-	RoomCode   uint32
+	SessionID string `json:"session_id"`
+	Method    Method `json:"method"`
+	SenderID  uint64
+	RoomCode  uint32
 	*SetupGameRequestPacket
 }
 
@@ -31,15 +31,15 @@ type SetupGameRequestPacket struct {
 	TurnTable TurnTable
 }
 
-// ActionType ...
-type ActionType int
+// Method ...
+type Method int
 
 // IsUndefined ...
-func (at ActionType) IsUndefined() bool {
-	return int(at) == ActionTypeUndefined
+func (m Method) IsUndefined() bool {
+	return int(m) == MethodUndefined
 }
 
 // IsSetupGame ...
-func (at ActionType) IsSetupGame() bool {
-	return int(at) == ActionTypeSetupGame
+func (m Method) IsSetupGame() bool {
+	return int(m) == MethodSetupGame
 }
