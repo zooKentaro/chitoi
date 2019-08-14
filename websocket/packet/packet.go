@@ -29,7 +29,8 @@ type BloadcastPacket struct {
 }
 
 type SetupGameRequestPacket struct {
-	Deck []*Deck
+	Deck      []*Deck
+	TurnTable TurnTable
 }
 
 // ActionType ...

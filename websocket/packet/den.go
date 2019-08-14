@@ -11,3 +11,7 @@ type Card struct {
 type Deck struct {
 	Cards []*Card
 }
+
+type TurnTable struct {
+	PlayerIDs []uint32
+}
