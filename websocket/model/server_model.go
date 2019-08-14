@@ -6,6 +6,7 @@ import (
 	"github.com/pkg/errors"
 	"github.com/uenoryo/chitoi/core"
 	"github.com/uenoryo/chitoi/database/row"
+	"github.com/uenoryo/chitoi/websocket/packet"
 )
 
 // Server (､´･ω･)▄︻┻┳═一
@@ -13,7 +14,7 @@ type Server struct {
 	core        *core.Core
 	doneCh      chan bool
 	errCh       chan error
-	broadCastCh chan *BloadcastPacket
+	broadCastCh chan *packet.BloadcastPacket
 	rooms       map[uint32]*Room
 }
 
@@ -22,7 +23,7 @@ func NewServer(core *core.Core) *Server {
 	var (
 		doneCh      = make(chan bool)
 		errCh       = make(chan error)
-		broadCastCh = make(chan *BloadcastPacket)
+		broadCastCh = make(chan *packet.BloadcastPacket)
 		rooms       = make(map[uint32]*Room)
 	)
 	return &Server{
@@ -69,8 +70,8 @@ func (s *Server) LaunchedRoom(roomCode uint32) *Room {
 }
 
 // Receive はroom codeの部屋のメンバーにpacketを送信する
-func (s *Server) Receive(packet *Packet) {
-	room, ok := s.rooms[packet.RoomCode]
+func (s *Server) Receive(pkt *packet.Packet) {
+	room, ok := s.rooms[pkt.RoomCode]
 	if !ok {
 		return
 	}
@@ -89,27 +90,27 @@ func (s *Server) Receive(packet *Packet) {
 			player2 = client.Player.Row
 		}
 	}
-	bloadcastPacket := &BloadcastPacket{
-		packet,
+	bloadcastPacket := &packet.BloadcastPacket{
+		pkt,
 		player1,
 		player2,
 	}
 	s.broadCastCh <- bloadcastPacket
 }
 
-func (s *Server) Validate(packet *Packet) error {
-	if packet.RoomCode == 0 {
+func (s *Server) Validate(pkt *packet.Packet) error {
+	if pkt.RoomCode == 0 {
 		return errors.New("error room code is empty")
 	}
-	if packet.SenderID == 0 {
+	if pkt.SenderID == 0 {
 		return errors.New("error sender id (user id) is empty")
 	}
-	room, ok := s.rooms[packet.RoomCode]
+	room, ok := s.rooms[pkt.RoomCode]
 	if !ok {
-		return errors.Errorf("invalid room code:%d", packet.RoomCode)
+		return errors.Errorf("invalid room code:%d", pkt.RoomCode)
 	}
-	if _, ok := room.Clients[packet.SenderID]; !ok {
-		return errors.Errorf("invalid sender id:%d", packet.SenderID)
+	if _, ok := room.Clients[pkt.SenderID]; !ok {
+		return errors.Errorf("invalid sender id:%d", pkt.SenderID)
 	}
 	return nil
 }

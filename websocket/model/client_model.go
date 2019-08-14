@@ -5,7 +5,7 @@ import (
 	"io"
 	"log"
 
-	"github.com/uenoryo/chitoi/database/row"
+	"github.com/uenoryo/chitoi/websocket/packet"
 	"golang.org/x/net/websocket"
 )
 
@@ -14,29 +14,14 @@ type Client struct {
 	room        *Room
 	Player      *User
 	IsListening bool
-	ch          chan *BloadcastPacket
+	ch          chan *packet.BloadcastPacket
 	doneCh      chan bool
-}
-
-// Packet は各クライアントから送信される1回分のデータ
-type Packet struct {
-	SessionID  string `json:"session_id"`
-	ActionType uint32 `json:"action_type"`
-	SenderID   uint64
-	RoomCode   uint32
-}
-
-// BloadcastPacket は全体に送信するデータ
-type BloadcastPacket struct {
-	*Packet
-	Player1 *row.User `json:"player1"`
-	Player2 *row.User `json:"player2"`
 }
 
 func NewClient(ws *websocket.Conn, room *Room, player *User) *Client {
 	var (
 		doneCh = make(chan bool)
-		ch     = make(chan *BloadcastPacket)
+		ch     = make(chan *packet.BloadcastPacket)
 	)
 	return &Client{
 		Player:      player,
@@ -74,13 +59,13 @@ func (c *Client) Listen() {
 			return
 
 		default:
-			packet := &Packet{}
-			err := websocket.JSON.Receive(c.ws, &packet)
+			pkt := &packet.Packet{}
+			err := websocket.JSON.Receive(c.ws, &pkt)
 			switch {
 			case err == io.EOF:
 				fmt.Println("close listenning for reading, player id:", c.Player.Row.ID)
 				c.room.PushOut(c)
-				if err := c.room.SubmitOnExitPlayer(packet); err != nil {
+				if err := c.room.SubmitOnExitPlayer(pkt); err != nil {
 					fmt.Println("[ERROR] submit on exit player failed", err.Error())
 				}
 				c.doneCh <- true
@@ -93,7 +78,7 @@ func (c *Client) Listen() {
 					server.Err(err)
 				}
 			default:
-				userID, err := c.room.Authenticate(packet.SessionID)
+				userID, err := c.room.Authenticate(pkt.SessionID)
 				if err != nil {
 					server, err2 := c.room.Server()
 					if err2 != nil {
@@ -102,8 +87,8 @@ func (c *Client) Listen() {
 						server.Err(err)
 					}
 				} else {
-					packet.SenderID = userID
-					if err := c.room.Submit(packet); err != nil {
+					pkt.SenderID = userID
+					if err := c.room.Submit(pkt); err != nil {
 						fmt.Println("[ERROR] invalid packet", err.Error())
 					}
 				}
@@ -119,9 +104,9 @@ func (c *Client) listenWrite() {
 		select {
 
 		// send message to the client
-		case packet := <-c.ch:
-			log.Println("Send:", packet)
-			websocket.JSON.Send(c.ws, packet)
+		case pkt := <-c.ch:
+			log.Println("Send:", pkt)
+			websocket.JSON.Send(c.ws, pkt)
 
 		// receive done request
 		case <-c.doneCh:
@@ -131,10 +116,10 @@ func (c *Client) listenWrite() {
 	}
 }
 
-func (c *Client) Receive(packet *BloadcastPacket) {
+func (c *Client) Receive(pkt *packet.BloadcastPacket) {
 	select {
-	case c.ch <- packet:
-		log.Println(packet, "を受け取ったよ！")
+	case c.ch <- pkt:
+		log.Println(pkt, "を受け取ったよ！")
 	default:
 		// c.server.Err(fmt.Errorf("client %d is disconnected.", c.ID))
 	}
