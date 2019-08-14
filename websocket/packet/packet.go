@@ -17,7 +17,7 @@ type RequestPacket struct {
 	SenderID  uint64
 	RoomCode  uint32
 	*SetupGameRequestPacket
-	*GameActionRequest
+	*GameActionRequestPacket
 }
 
 // BloadcastPacket は全体に送信するデータ
@@ -27,12 +27,14 @@ type BloadcastPacket struct {
 	Player2 *row.User `json:"player2"`
 }
 
+// SetupGameRequestPacket はゲームをセットアップした時に乗せるデータ
 type SetupGameRequestPacket struct {
 	Deck      []*Deck
 	TurnTable TurnTable
 }
 
-type GameActionRequest struct {
+// GameActionRequestPacket はゲーム内のプレイヤーの1回の行動のデータ
+type GameActionRequestPacket struct {
 	ActionType   uint32
 	Mark         uint32
 	PutCardIndex uint32
