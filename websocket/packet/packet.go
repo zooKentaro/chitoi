@@ -29,15 +29,15 @@ type BloadcastPacket struct {
 
 // SetupGameRequestPacket はゲームをセットアップした時に乗せるデータ
 type SetupGameRequestPacket struct {
-	Deck      []*Deck
-	TurnTable TurnTable
+	Deck      []*Deck   `json:"deck"`
+	TurnTable TurnTable `json:"turn_table"`
 }
 
 // GameActionRequestPacket はゲーム内のプレイヤーの1回の行動のデータ
 type GameActionRequestPacket struct {
-	ActionType   uint32
-	Mark         uint32
-	PutCardIndex uint32
+	ActionType   uint32 `json:"action_type"`
+	Mark         uint32 `json:"mark"`
+	PutCardIndex uint32 `json:"put_card_index"`
 }
 
 // Method ...
