@@ -4,32 +4,22 @@ import "github.com/uenoryo/chitoi/database/row"
 
 // RequestPacket は各クライアントから送信される1回分のデータ
 type RequestPacket struct {
-	SessionID string `json:"session_id"`
-	Method    Method `json:"method"`
-	SenderID  uint64
-	RoomCode  uint32
-	*SetupGameRequestPacket
-	*GameActionRequestPacket
-}
-
-// BloadcastPacket は全体に送信するデータ
-type BloadcastPacket struct {
-	*RequestPacket
-	Player1 *row.User `json:"player1"`
-	Player2 *row.User `json:"player2"`
-}
-
-// SetupGameRequestPacket はゲームをセットアップした時に乗せるデータ
-type SetupGameRequestPacket struct {
-	TurnTable  *TurnTable `json:"turn_table"`
-	RandomSeed uint64     `json:"random_seed"`
-}
-
-// GameActionRequestPacket はゲーム内のプレイヤーの1回の行動のデータ
-type GameActionRequestPacket struct {
+	SessionID    string `json:"session_id"`
+	Method       Method `json:"method"`
+	SenderID     uint64
+	RoomCode     uint32
+	TurnTable    *TurnTable `json:"turn_table"`
+	RandomSeed   uint64     `json:"random_seed"`
 	ActionType   ActionType `json:"action_type"`
 	Mark         uint32     `json:"change_mark"`
 	PutHandIndex int32      `json:"put_hand_index"`
+}
+
+// BroadcastPacket は全体に送信するデータ
+type BroadcastPacket struct {
+	*RequestPacket
+	Player1 *row.User `json:"player1"`
+	Player2 *row.User `json:"player2"`
 }
 
 // Method ...
