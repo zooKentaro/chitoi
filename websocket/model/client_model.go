@@ -1,6 +1,7 @@
 package model
 
 import (
+	"encoding/json"
 	"fmt"
 	"io"
 	"log"
@@ -48,7 +49,7 @@ func (c *Client) Listen() {
 	log.Println("Listening read from client")
 
 	if err := c.room.SubmitOnEnterPlayer(); err != nil {
-		fmt.Println("[ERROR] submit on exit player failed", err.Error())
+		fmt.Println("[error] submit on exit player failed", err.Error())
 	}
 	for {
 		select {
@@ -66,14 +67,14 @@ func (c *Client) Listen() {
 				fmt.Println("close listenning for reading, player id:", c.Player.Row.ID)
 				c.room.PushOut(c)
 				if err := c.room.SubmitOnExitPlayer(request); err != nil {
-					fmt.Println("[ERROR] submit on exit player failed", err.Error())
+					fmt.Println("[error] submit on exit player failed", err.Error())
 				}
 				c.doneCh <- true
 				return
 			case err != nil:
 				server, err2 := c.room.Server()
 				if err2 != nil {
-					fmt.Println("[ERROR] error ocurred in room, but failed to get server", err2.Error())
+					fmt.Println("[error] error ocurred in room, but failed to get server", err2.Error())
 				} else {
 					server.Err(err)
 				}
@@ -82,14 +83,14 @@ func (c *Client) Listen() {
 				if err != nil {
 					server, err2 := c.room.Server()
 					if err2 != nil {
-						fmt.Println("[ERROR] error ocurred in room, but failed to get server", err2.Error())
+						fmt.Println("[error] error ocurred in room, but failed to get server", err2.Error())
 					} else {
 						server.Err(err)
 					}
 				} else {
 					request.SenderID = userID
 					if err := c.room.Submit(request); err != nil {
-						fmt.Println("[ERROR] invalid packet", err.Error())
+						fmt.Println("[error] invalid packet", err.Error())
 					}
 				}
 
@@ -119,7 +120,11 @@ func (c *Client) listenWrite() {
 func (c *Client) Receive(pkt *packet.BloadcastPacket) {
 	select {
 	case c.ch <- pkt:
-		log.Println(pkt, "を受け取ったよ！")
+		if bytes, err := json.Marshal(&pkt); err != nil {
+			log.Println("[error] receive packet marshal failed. error:", err.Error())
+		} else {
+			log.Println("[info] receive:", string(bytes))
+		}
 	default:
 		// c.server.Err(fmt.Errorf("client %d is disconnected.", c.ID))
 	}
