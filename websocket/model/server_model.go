@@ -95,7 +95,6 @@ func (s *Server) Receive(request *packet.RequestPacket) {
 		player1,
 		player2,
 	}
-	log.Println(broadcastPacket.RandomSeed)
 	s.broadCastCh <- broadcastPacket
 }
 
