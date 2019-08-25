@@ -2,25 +2,6 @@ package packet
 
 import "github.com/uenoryo/chitoi/database/row"
 
-const (
-	// MethodUndefined ...
-	MethodUndefined Method = iota
-	// MethodSetupGame ゲームの初期化が完了し、ゲームを開始する
-	MethodSetupGame
-	// EntryPlayer Playerの新規接続
-	MethodEntryPlayer
-	// ExitPlayer Playerの接続解除
-	MethodExitPlayer
-	// Put カードを場に出した
-	MethodPut
-	// Draw カードを引いた
-	MethodDraw
-	// RefuseAttach カードを付け加えた
-	MethodRefuseAttach
-	// ChangeMark マークを変えた
-	MethodChangeMark
-)
-
 // RequestPacket は各クライアントから送信される1回分のデータ
 type RequestPacket struct {
 	SessionID string `json:"session_id"`
@@ -46,13 +27,24 @@ type SetupGameRequestPacket struct {
 
 // GameActionRequestPacket はゲーム内のプレイヤーの1回の行動のデータ
 type GameActionRequestPacket struct {
-	ActionType   uint32 `json:"action_type"`
-	Mark         uint32 `json:"mark"`
-	PutCardIndex uint32 `json:"put_card_index"`
+	ActionType   ActionType `json:"action_type"`
+	Mark         uint32     `json:"mark"`
+	PutCardIndex uint32     `json:"put_card_index"`
 }
 
 // Method ...
 type Method int
+
+const (
+	// MethodUndefined ...
+	MethodUndefined Method = iota
+	// MethodSetupGame ゲームの初期化が完了し、ゲームを開始する
+	MethodSetupGame
+	// EntryPlayer Playerの新規接続
+	MethodEntryPlayer
+	// ExitPlayer Playerの接続解除
+	MethodExitPlayer
+)
 
 // IsUndefined ...
 func (m Method) IsUndefined() bool {
@@ -63,3 +55,17 @@ func (m Method) IsUndefined() bool {
 func (m Method) IsSetupGame() bool {
 	return m == MethodSetupGame
 }
+
+// ActionType はインゲーム内の行動を識別する型
+type ActionType int
+
+const (
+	// ActionTypePut カードを場に出した
+	ActionTypePut ActionType = iota
+	// ActionTypeDraw カードを引いた
+	ActionTypeDraw
+	// ActionTypeRefuseAttach カードを付け加えた
+	ActionTypeRefuseAttach
+	// ActionTypeChangeMark マークを変えた
+	ActionTypeChangeMark
+)
