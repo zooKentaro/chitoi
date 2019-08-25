@@ -21,7 +21,8 @@ type BloadcastPacket struct {
 
 // SetupGameRequestPacket はゲームをセットアップした時に乗せるデータ
 type SetupGameRequestPacket struct {
-	TurnTable *TurnTable `json:"turn_table"`
+	TurnTable  *TurnTable `json:"turn_table"`
+	RandomSeed uint64     `json:"random_seed"`
 }
 
 // GameActionRequestPacket はゲーム内のプレイヤーの1回の行動のデータ
