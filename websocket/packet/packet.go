@@ -28,8 +28,8 @@ type SetupGameRequestPacket struct {
 // GameActionRequestPacket はゲーム内のプレイヤーの1回の行動のデータ
 type GameActionRequestPacket struct {
 	ActionType   ActionType `json:"action_type"`
-	Mark         uint32     `json:"mark"`
-	PutCardIndex uint32     `json:"put_card_index"`
+	Mark         uint32     `json:"change_mark"`
+	PutHandIndex int32      `json:"put_hand_index"`
 }
 
 // Method ...
@@ -44,6 +44,8 @@ const (
 	MethodEntryPlayer
 	// ExitPlayer Playerの接続解除
 	MethodExitPlayer
+	// InGameAction インゲーム内の行動
+	InGameAction
 )
 
 // IsUndefined ...
