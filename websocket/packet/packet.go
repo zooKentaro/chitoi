@@ -4,10 +4,21 @@ import "github.com/uenoryo/chitoi/database/row"
 
 const (
 	// MethodUndefined ...
-	MethodUndefined = iota
-
-	// MethodSetupGame ...
+	MethodUndefined Method = iota
+	// MethodSetupGame ゲームの初期化が完了し、ゲームを開始する
 	MethodSetupGame
+	// EntryPlayer Playerの新規接続
+	MethodEntryPlayer
+	// ExitPlayer Playerの接続解除
+	MethodExitPlayer
+	// Put カードを場に出した
+	MethodPut
+	// Draw カードを引いた
+	MethodDraw
+	// RefuseAttach カードを付け加えた
+	MethodRefuseAttach
+	// ChangeMark マークを変えた
+	MethodChangeMark
 )
 
 // RequestPacket は各クライアントから送信される1回分のデータ
@@ -45,10 +56,10 @@ type Method int
 
 // IsUndefined ...
 func (m Method) IsUndefined() bool {
-	return int(m) == MethodUndefined
+	return m == MethodUndefined
 }
 
 // IsSetupGame ...
 func (m Method) IsSetupGame() bool {
-	return int(m) == MethodSetupGame
+	return m == MethodSetupGame
 }
