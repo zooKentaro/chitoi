@@ -15,14 +15,14 @@ type Client struct {
 	room        *Room
 	Player      *User
 	IsListening bool
-	ch          chan *packet.BloadcastPacket
+	ch          chan *packet.BroadcastPacket
 	doneCh      chan bool
 }
 
 func NewClient(ws *websocket.Conn, room *Room, player *User) *Client {
 	var (
 		doneCh = make(chan bool)
-		ch     = make(chan *packet.BloadcastPacket)
+		ch     = make(chan *packet.BroadcastPacket)
 	)
 	return &Client{
 		Player:      player,
@@ -117,7 +117,7 @@ func (c *Client) listenWrite() {
 	}
 }
 
-func (c *Client) Receive(pkt *packet.BloadcastPacket) {
+func (c *Client) Receive(pkt *packet.BroadcastPacket) {
 	select {
 	case c.ch <- pkt:
 		if bytes, err := json.Marshal(&pkt); err != nil {

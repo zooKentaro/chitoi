@@ -152,7 +152,7 @@ func (r *Room) Submit(request *packet.RequestPacket) error {
 	return nil
 }
 
-// SubmitOnExitPlayer は player の退室を伝えるためにbloadcastする
+// SubmitOnExitPlayer は player の退室を伝えるためにbroadcastする
 // 通信切断時にも呼ばれる => SessionID等受け取れないので認証できない
 func (r *Room) SubmitOnExitPlayer(request *packet.RequestPacket) error {
 	request.RoomCode = r.Row.Code
@@ -165,7 +165,7 @@ func (r *Room) SubmitOnExitPlayer(request *packet.RequestPacket) error {
 	return nil
 }
 
-// SubmitOnEnterPlayer は player の入室を伝えるためにbloadcastする
+// SubmitOnEnterPlayer は player の入室を伝えるためにbroadcastする
 // 認証後に呼ばれるので認証しない
 func (r *Room) SubmitOnEnterPlayer() error {
 	request := &packet.RequestPacket{
@@ -180,7 +180,7 @@ func (r *Room) SubmitOnEnterPlayer() error {
 	return nil
 }
 
-func (r *Room) SendToMembers(pkt *packet.BloadcastPacket) {
+func (r *Room) SendToMembers(pkt *packet.BroadcastPacket) {
 	for _, member := range r.Clients {
 		member.Receive(pkt)
 	}

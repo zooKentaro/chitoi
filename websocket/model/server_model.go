@@ -14,7 +14,7 @@ type Server struct {
 	core        *core.Core
 	doneCh      chan bool
 	errCh       chan error
-	broadCastCh chan *packet.BloadcastPacket
+	broadCastCh chan *packet.BroadcastPacket
 	rooms       map[uint32]*Room
 }
 
@@ -23,7 +23,7 @@ func NewServer(core *core.Core) *Server {
 	var (
 		doneCh      = make(chan bool)
 		errCh       = make(chan error)
-		broadCastCh = make(chan *packet.BloadcastPacket)
+		broadCastCh = make(chan *packet.BroadcastPacket)
 		rooms       = make(map[uint32]*Room)
 	)
 	return &Server{
@@ -90,12 +90,13 @@ func (s *Server) Receive(request *packet.RequestPacket) {
 			player2 = client.Player.Row
 		}
 	}
-	bloadcastPacket := &packet.BloadcastPacket{
+	broadcastPacket := &packet.BroadcastPacket{
 		request,
 		player1,
 		player2,
 	}
-	s.broadCastCh <- bloadcastPacket
+	log.Println(broadcastPacket.RandomSeed)
+	s.broadCastCh <- broadcastPacket
 }
 
 func (s *Server) Validate(request *packet.RequestPacket) error {
