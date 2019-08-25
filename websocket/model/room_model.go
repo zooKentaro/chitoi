@@ -152,10 +152,11 @@ func (r *Room) Submit(request *packet.RequestPacket) error {
 	return nil
 }
 
-// SubmitOnExitPlayer は player の退出状況を伝えるためにbloadcastする
+// SubmitOnExitPlayer は player の退室を伝えるためにbloadcastする
 // 通信切断時にも呼ばれる => SessionID等受け取れないので認証できない
 func (r *Room) SubmitOnExitPlayer(request *packet.RequestPacket) error {
 	request.RoomCode = r.Row.Code
+	request.Method = packet.MethodExitPlayer
 	server, err := r.Server()
 	if err != nil {
 		return errors.Wrap(err, "error get server")
@@ -164,11 +165,13 @@ func (r *Room) SubmitOnExitPlayer(request *packet.RequestPacket) error {
 	return nil
 }
 
-// SubmitOnExitPlayer は player の退出状況を伝えるためにbloadcastする
+// SubmitOnEnterPlayer は player の入室を伝えるためにbloadcastする
 // 認証後に呼ばれるので認証しない
 func (r *Room) SubmitOnEnterPlayer() error {
-	request := &packet.RequestPacket{}
-	request.RoomCode = r.Row.Code
+	request := &packet.RequestPacket{
+		RoomCode: r.Row.Code,
+		Method:   packet.MethodEntryPlayer,
+	}
 	server, err := r.Server()
 	if err != nil {
 		return errors.Wrap(err, "error get server")
