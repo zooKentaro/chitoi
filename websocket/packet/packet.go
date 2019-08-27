@@ -60,4 +60,8 @@ const (
 	ActionTypeRefuseAttach
 	// ActionTypeChangeMark マークを変えた
 	ActionTypeChangeMark
+	// TurnAndPut ...
+	TurnAndPut
+	// Den かけようとした
+	Den
 )
