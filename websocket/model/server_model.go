@@ -47,6 +47,7 @@ func (s *Server) Listen() {
 
 		case packet := <-s.broadCastCh:
 			if room, ok := s.rooms[packet.RoomCode]; ok {
+				log.Println("[info] broadcast data:", packet)
 				room.SendToMembers(packet)
 			}
 		}

@@ -93,7 +93,6 @@ func (c *Client) Listen() {
 						fmt.Println("[error] invalid packet", err.Error())
 					}
 				}
-
 			}
 		}
 	}
