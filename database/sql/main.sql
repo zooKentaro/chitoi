@@ -1,5 +1,38 @@
 SET foreign_key_checks=0;
 
+DROP TABLE IF EXISTS `broadcast_message`;
+
+CREATE TABLE `broadcast_message` (
+    `id` BIGINT unsigned NOT NULL AUTO_INCREMENT,
+    `title` VARCHAR(191) NOT NULL,
+    `body` VARCHAR(191) NOT NULL,
+    `open_at` DATETIME NOT NULL,
+    `close_at` DATETIME NOT NULL,
+    `created_at` DATETIME NOT NULL,
+    `updated_at` DATETIME NOT NULL,
+    `deleted_at` DATETIME NOT NULL,
+    INDEX `open_at_close_at_idx` (`open_at`, `close_at`),
+    PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARACTER SET utf8mb4;
+
+
+DROP TABLE IF EXISTS `business`;
+
+CREATE TABLE `business` (
+    `id` INTEGER unsigned NOT NULL,
+    `prefecture` INTEGER unsigned NOT NULL,
+    `name` VARCHAR(191) NOT NULL,
+    `price_base` BIGINT unsigned NOT NULL,
+    `price_level2` BIGINT unsigned NOT NULL,
+    `price_level3` BIGINT unsigned NOT NULL,
+    `return_rate_base` INTEGER unsigned NOT NULL,
+    `return_rate_level2` INTEGER unsigned NOT NULL,
+    `return_rate_level3` INTEGER unsigned NOT NULL,
+    `icon_id` INTEGER unsigned NOT NULL,
+    PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARACTER SET utf8mb4;
+
+
 DROP TABLE IF EXISTS `user`;
 
 CREATE TABLE `user` (
@@ -48,19 +81,18 @@ CREATE TABLE `user_rank` (
 ) ENGINE=InnoDB DEFAULT CHARACTER SET utf8mb4;
 
 
-DROP TABLE IF EXISTS `business`;
+DROP TABLE IF EXISTS `personal_message`;
 
-CREATE TABLE `business` (
-    `id` INTEGER unsigned NOT NULL,
-    `prefecture` INTEGER unsigned NOT NULL,
-    `name` VARCHAR(191) NOT NULL,
-    `price_base` BIGINT unsigned NOT NULL,
-    `price_level2` BIGINT unsigned NOT NULL,
-    `price_level3` BIGINT unsigned NOT NULL,
-    `return_rate_base` INTEGER unsigned NOT NULL,
-    `return_rate_level2` INTEGER unsigned NOT NULL,
-    `return_rate_level3` INTEGER unsigned NOT NULL,
-    `icon_id` INTEGER unsigned NOT NULL,
+CREATE TABLE `personal_message` (
+    `id` BIGINT unsigned NOT NULL AUTO_INCREMENT,
+    `title` VARCHAR(191) NOT NULL,
+    `body` VARCHAR(191) NOT NULL,
+    `open_at` DATETIME NOT NULL,
+    `close_at` DATETIME NOT NULL,
+    `created_at` DATETIME NOT NULL,
+    `updated_at` DATETIME NOT NULL,
+    `deleted_at` DATETIME NOT NULL,
+    INDEX `open_at_close_at_idx` (`open_at`, `close_at`),
     PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARACTER SET utf8mb4;
 
