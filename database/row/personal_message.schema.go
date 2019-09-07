@@ -15,7 +15,7 @@ type PersonalMessage struct {
 	CloseAt   time.Time `ddl:"close_at" json:"close_at"`
 	CreatedAt time.Time `db:"created_at" json:"created_at"`
 	UpdatedAt time.Time `db:"updated_at" json:"updated_at"`
-	DeletedAt time.Time `db:"deleted_at" json:"deleted_at"`
+	DeletedAt time.Time `ddl:"null" db:"deleted_at" json:"deleted_at"`
 }
 
 func (r *PersonalMessage) PrimaryKey() dialect.PrimaryKey {

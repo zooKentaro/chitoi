@@ -10,7 +10,7 @@ CREATE TABLE `broadcast_message` (
     `close_at` DATETIME NOT NULL,
     `created_at` DATETIME NOT NULL,
     `updated_at` DATETIME NOT NULL,
-    `deleted_at` DATETIME NOT NULL,
+    `deleted_at` DATETIME NULL,
     INDEX `open_at_close_at_idx` (`open_at`, `close_at`),
     PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARACTER SET utf8mb4;
@@ -91,7 +91,7 @@ CREATE TABLE `personal_message` (
     `close_at` DATETIME NOT NULL,
     `created_at` DATETIME NOT NULL,
     `updated_at` DATETIME NOT NULL,
-    `deleted_at` DATETIME NOT NULL,
+    `deleted_at` DATETIME NULL,
     INDEX `open_at_close_at_idx` (`open_at`, `close_at`),
     PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARACTER SET utf8mb4;
