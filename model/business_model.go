@@ -3,7 +3,6 @@ package model
 import (
     "database/sql"
     "fmt"
-    "log"
     "math/rand"
     "strconv"
     "strings"
@@ -116,9 +115,6 @@ func (repo *BusinessRepository) todaysPrefNum() (uint32, error) {
             return 0, errors.Wrap(err, "error set datetime and prefecture num")
         }
     }
-
-    log.Println(prefNum)
-
     return prefNum, nil
 }
 
