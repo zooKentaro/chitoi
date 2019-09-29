@@ -19,4 +19,5 @@ type BusinessBuyRequest struct {
 type BusinessBuyResponse struct {
 	UserBusinesses []*row.UserBusiness `json:"user_businesses"`
 	AfterRank      uint32              `json:"after_rank"`
+	AfterMoney     int64               `json:"after_money,string"`
 }

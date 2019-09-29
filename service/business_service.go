@@ -63,5 +63,6 @@ func (s *businessService) Buy(req *data.BusinessBuyRequest) (*data.BusinessBuyRe
     return &data.BusinessBuyResponse{
         UserBusinesses: ubRows,
         AfterRank:      user.Row.Rank,
+        AfterMoney:     user.Row.Money,
     }, nil
 }
