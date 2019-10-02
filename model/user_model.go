@@ -14,7 +14,17 @@ import (
     "github.com/uenoryo/chitoi/lib/helper"
 )
 
-var sessionKeyPrefix = "CHITOI-LOGIN-SESSION"
+const (
+    CreateUserSQL             = "INSERT INTO `user` (`name`, `token`, `last_login_at`, `rank`, `money`, `stamina`, `created_at`) VALUES (?,?,?,?,?,?,?)"
+    FindUserByIDSQL           = "SELECT * FROM user WHERE id = ?"
+    FindUserByTokenSQL        = "SELECT * FROM user WHERE token = ?"
+    LockForUpdateUserSQL      = "SELECT * FROM user WHERE id = ? FOR UPDATE"
+    UpdateUserByLoginSQL      = "UPDATE user SET last_login_at = ?, money = ? WHERE id = ?"
+    UpdateUserByFinishGameSQL = "UPDATE user SET stamina = ?, money = ? WHERE id = ?"
+    BusinessListSQL           = "SELECT * FROM user_business WHERE user_id = ?"
+    InitialUserName           = ""
+    SessionKeyPrefix          = "CHITOI-LOGIN-SESSION"
+)
 
 func CreateNewUser(core *core.Core) (*User, error) {
     v4, err := uuid.NewV4()
@@ -33,8 +43,7 @@ func CreateNewUser(core *core.Core) (*User, error) {
         CreatedAt:   now,
     }
 
-    q := "INSERT INTO `user` (`name`, `token`, `last_login_at`, `rank`, `money`, `stamina`, `created_at`) VALUES (?,?,?,?,?,?,?)"
-    res, err := core.DB.Exec(q, "", token, now, userRow.Rank, userRow.Money, userRow.Stamina, now)
+    res, err := core.DB.Exec(CreateUserSQL, InitialUserName, token, now, userRow.Rank, userRow.Money, userRow.Stamina, now)
     if err != nil {
         return nil, errors.Wrap(err, "error create user")
     }
@@ -75,7 +84,7 @@ type User struct {
 
 func (repo *UserRepository) FindByToken(token string) (*User, error) {
     userRow := row.User{}
-    err := repo.core.DB.Get(&userRow, "SELECT * FROM user WHERE token = ?", token)
+    err := repo.core.DB.Get(&userRow, FindUserByTokenSQL, token)
     switch {
     case err == sql.ErrNoRows:
         return nil, errors.Wrap(err, "user is not found")
@@ -87,7 +96,7 @@ func (repo *UserRepository) FindByToken(token string) (*User, error) {
 
 func (repo *UserRepository) FindByID(id uint64) (*User, error) {
     userRow := row.User{}
-    err := repo.core.DB.Get(&userRow, "SELECT * FROM user WHERE id = ?", id)
+    err := repo.core.DB.Get(&userRow, FindUserByIDSQL, id)
     switch {
     case err == sql.ErrNoRows:
         return nil, errors.Wrap(err, "user is not found")
@@ -98,7 +107,7 @@ func (repo *UserRepository) FindByID(id uint64) (*User, error) {
 }
 
 func (repo *UserRepository) FindBySessionID(sessionID string) (*User, error) {
-    key := fmt.Sprintf("%s:%s", sessionKeyPrefix, sessionID)
+    key := fmt.Sprintf("%s:%s", SessionKeyPrefix, sessionID)
     userID, err := redis.Uint64(repo.core.Redis.Do("GET", key))
     if err != nil {
         return nil, errors.Wrap(err, "error get user id by session id")
@@ -113,7 +122,7 @@ func (u *User) Login() (string, bool, error) {
         return "", false, errors.Wrap(err, "error uuid new v4")
     }
     sessionID := v4.String()
-    key := fmt.Sprintf("%s:%s", sessionKeyPrefix, sessionID)
+    key := fmt.Sprintf("%s:%s", SessionKeyPrefix, sessionID)
     if _, err := u.core.Redis.Do("SET", key, u.Row.ID); err != nil {
         return "", false, errors.Wrap(err, "error set session")
     }
@@ -125,7 +134,7 @@ func (u *User) Login() (string, bool, error) {
     }
 
     // 日付が変わっていたら収益を付与して last_login_at を更新
-    if _, err := u.core.DB.Exec("SELECT * FROM user WHERE id = ? FOR UPDATE", u.Row.ID); err != nil {
+    if _, err := u.core.DB.Exec(LockForUpdateUserSQL, u.Row.ID); err != nil {
         return "", false, errors.Wrap(err, "error lock for update")
     }
 
@@ -143,8 +152,7 @@ func (u *User) Login() (string, bool, error) {
 
         u.Row.Money += profits
 
-        q := "UPDATE user SET last_login_at = ?, money = ? WHERE id = ?"
-        if _, err := u.core.DB.Exec(q, time.Now(), u.Row.Money, u.Row.ID); err != nil {
+        if _, err := u.core.DB.Exec(UpdateUserByLoginSQL, time.Now(), u.Row.Money, u.Row.ID); err != nil {
             return "", false, errors.Wrap(err, "error update user data")
         }
     }
@@ -165,11 +173,11 @@ func (u *User) GameFinish(data *GameData) error {
 
     u.getOrLoseMoney(data.Money)
 
-    if _, err := u.core.DB.Exec("SELECT * FROM user WHERE id = ? FOR UPDATE", u.Row.ID); err != nil {
+    if _, err := u.core.DB.Exec(LockForUpdateUserSQL, u.Row.ID); err != nil {
         return errors.Wrap(err, "error lock for update")
     }
 
-    if _, err := u.core.DB.Exec("UPDATE user SET stamina = ?, money = ? WHERE id = ?", u.Row.Stamina, u.Row.Money, u.Row.ID); err != nil {
+    if _, err := u.core.DB.Exec(UpdateUserByFinishGameSQL, u.Row.Stamina, u.Row.Money, u.Row.ID); err != nil {
         return errors.Wrap(err, "error update user data")
     }
 
@@ -178,7 +186,7 @@ func (u *User) GameFinish(data *GameData) error {
 
 func (u *User) BusinessList() ([]*row.UserBusiness, error) {
     ubRows := []*row.UserBusiness{}
-    err := u.core.DB.Select(&ubRows, "SELECT * FROM user_business WHERE user_id = ?", u.Row.ID)
+    err := u.core.DB.Select(&ubRows, BusinessListSQL, u.Row.ID)
     switch {
     case err == sql.ErrNoRows:
         return []*row.UserBusiness{}, nil
