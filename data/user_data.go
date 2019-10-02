@@ -62,13 +62,13 @@ type UserRecordRequest struct {
 // UserRecordResponse ...
 type UserRecordResponse struct{}
 
-// UserEditNameRequest ...
-type UserEditNameRequest struct {
+// UserRenameRequest ...
+type UserRenameRequest struct {
     SessionID string `json:"session_id"`
     Name      string `json:"name"`
 }
 
-// UserEditNameResponse ...
-type UserEditNameResponse struct {
+// UserRenameResponse ...
+type UserRenameResponse struct {
     User *row.User `json:"user"`
 }
