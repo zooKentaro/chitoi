@@ -6,7 +6,7 @@ import (
     "github.com/uenoryo/chitoi/database/row"
 )
 
-// UserSignupRequest is XXX
+// UserSignupRequest ...
 type UserSignupRequest struct {
     Platform uint32 `json:"platform"`
 }
@@ -18,7 +18,7 @@ func (u *UserSignupRequest) Validate() error {
     return nil
 }
 
-// UserSignupResponse is XXX
+// UserSignupResponse ...
 type UserSignupResponse struct {
     User       *row.User       `json:"user"`
     SessionID  string          `json:"session_id"`
@@ -26,12 +26,12 @@ type UserSignupResponse struct {
     UserRanks  []*row.UserRank `json:"user_ranks"`
 }
 
-// UserLoginRequest is XXX
+// UserLoginRequest ...
 type UserLoginRequest struct {
     Token string `json:"token"`
 }
 
-// UserLoginResponse is XXX
+// UserLoginResponse ...
 type UserLoginResponse struct {
     User              *row.User           `json:"user"`
     SessionID         string              `json:"session_id"`
@@ -41,23 +41,34 @@ type UserLoginResponse struct {
     IsTodayFirstLogin bool                `json:"is_today_first_login"`
 }
 
-// UserInfoRequest is XXX
+// UserInfoRequest ...
 type UserInfoRequest struct {
     SessionID string `json:"session_id"`
 }
 
-// UserInfoResponse is XXX
+// UserInfoResponse ...
 type UserInfoResponse struct {
     User           *row.User           `json:"user"`
     UserBusinesses []*row.UserBusiness `json:"user_businesses"`
 }
 
-// UserRecordRequest is XXX
+// UserRecordRequest ...
 type UserRecordRequest struct {
     SessionID      string `json:"session_id"`
     BestScore      uint64 `json:"best_score,string"`
     BestTotalScore uint64 `json:"best_total_score,string"`
 }
 
-// UserRecordResponse is XXX
+// UserRecordResponse ...
 type UserRecordResponse struct{}
+
+// UserEditNameRequest ...
+type UserEditNameRequest struct {
+    SessionID string `json:"session_id"`
+    Name      string `json:"name"`
+}
+
+// UserEditNameResponse ...
+type UserEditNameResponse struct {
+    User *row.User `json:"user"`
+}
