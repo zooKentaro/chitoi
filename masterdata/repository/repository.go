@@ -1,6 +1,14 @@
 package masterdata
 
-import "github.com/jmoiron/sqlx"
+import (
+	"errors"
+
+	"github.com/jmoiron/sqlx"
+)
+
+var (
+	ErrNotFound = errors.New("error not found")
+)
 
 // Masterdata (､´･ω･)▄︻┻┳═一
 type Masterdata struct {
