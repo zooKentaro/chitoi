@@ -29,6 +29,7 @@ func NewUser(core *core.Core, row *row.User) *User {
         Row:  row,
     }
     user.Room = &UserRoomBehavior{core, user}
+    user.Business = &UserBusinessBehavior{core, user}
 
     return user
 }
@@ -37,7 +38,8 @@ type User struct {
     Row  *row.User
     core *core.Core
 
-    Room *UserRoomBehavior
+    Room     *UserRoomBehavior
+    Business *UserBusinessBehavior
 }
 
 func (repo *UserRepository) FindByToken(token string) (*User, error) {

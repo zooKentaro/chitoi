@@ -135,55 +135,6 @@ func (u *User) BusinessList() ([]*row.UserBusiness, error) {
     }
 }
 
-func (u *User) BusinessBuy(business *Business) error {
-    if err := business.IsOpen(); err != nil {
-        return errors.Wrap(err, "error business is open")
-    }
-
-    if _, err := u.core.DB.Exec("SELECT * FROM user WHERE id = ? FOR UPDATE", u.Row.ID); err != nil {
-        return errors.Wrap(err, "error lock for update")
-    }
-
-    exists := true
-    ubRow := &row.UserBusiness{}
-    q := "SELECT * FROM user_business WHERE user_id = ? AND business_id = ?"
-    if err := u.core.DB.Get(ubRow, q, u.Row.ID, business.Row.ID); err != nil {
-        if err == sql.ErrNoRows {
-            exists = false
-        } else {
-            return errors.Wrap(err, "error find user business")
-        }
-    }
-
-    if err := u.canBuy(ubRow, business); err != nil {
-        return errors.Wrap(err, "error can buy")
-    }
-
-    nextPrice, err := business.NextPrice(ubRow)
-    if err != nil {
-        return errors.Wrap(err, "error next price")
-    }
-    u.spendMoney(nextPrice)
-
-    if _, err := u.core.DB.Exec("UPDATE user SET money = ? WHERE id = ?", u.Row.Money, u.Row.ID); err != nil {
-        return errors.Wrap(err, "error update user data")
-    }
-
-    if exists {
-        q := "UPDATE user_business SET level = ?, last_buy_at = ? WHERE user_id = ? AND business_id = ?"
-        if _, err := u.core.DB.Exec(q, ubRow.Level+1, time.Now(), u.Row.ID, business.Row.ID); err != nil {
-            return errors.Wrap(err, "error update user data")
-        }
-    } else {
-        q := "INSERT INTO user_business (user_id, business_id, level, last_buy_at) VALUES (?,?,?,?)"
-        _, err := u.core.DB.Exec(q, u.Row.ID, business.Row.ID, 1, time.Now())
-        if err != nil {
-            return errors.Wrap(err, "error create user")
-        }
-    }
-    return nil
-}
-
 func (u *User) UpdateRecord(bestScore, bestTotalScore uint64) error {
     if _, err := u.core.DB.Exec("SELECT * FROM user WHERE id = ? FOR UPDATE", u.Row.ID); err != nil {
         return errors.Wrap(err, "error lock for update")
@@ -281,30 +232,4 @@ func (u *User) getOrLoseMoney(amount int64) {
 // spendMoney はお金を消費する
 func (u *User) spendMoney(amount uint64) {
     u.Row.Money -= int64(amount)
-}
-
-// canBuy は購入可能な情状態かどうか以下のチェックを行います
-// * 今日はまだ1度も購入していないこと
-// * まだ Business Level が最大になっていないこと
-// * 購入に必要な資金を持っていること
-func (u *User) canBuy(ub *row.UserBusiness, business *Business) error {
-    if ub != nil {
-        if helper.IsSameDay(ub.LastBuyAt, time.Now()) {
-            return errors.New("cannot buy 2 times per day")
-        }
-        if ub.Level >= constant.MaxBusinessLevel {
-            return errors.New("cannot level up more than this")
-        }
-    }
-
-    nextPrice, err := business.NextPrice(ub)
-    if err != nil {
-        return errors.Wrap(err, "error next price")
-    }
-
-    if u.Row.Money < int64(nextPrice) {
-        return errors.Errorf("error money is not enough, want %d but current %d", nextPrice, u.Row.Money)
-    }
-
-    return nil
 }
