@@ -11,6 +11,14 @@ import (
     "github.com/uenoryo/chitoi/lib/helper"
 )
 
+const (
+    lockUserByIDSQL       = "SELECT * FROM user WHERE id = ? FOR UPDATE"
+    findUserBusinessSQL   = "SELECT * FROM user_business WHERE user_id = ? AND business_id = ?"
+    updateUserMoneySQL    = "UPDATE user SET money = ? WHERE id = ?"
+    updateUserBusinessSQL = "UPDATE user_business SET level = ?, last_buy_at = ? WHERE user_id = ? AND business_id = ?"
+    insertUserBusinessSQL = "INSERT INTO user_business (user_id, business_id, level, last_buy_at) VALUES (?,?,?,?)"
+)
+
 type UserBusinessBehavior struct {
     core *core.Core
     user *User
@@ -21,18 +29,17 @@ func (bvr *UserBusinessBehavior) BusinessBuy(business *Business) error {
         return errors.Wrap(err, "error business is open")
     }
 
-    if _, err := bvr.core.DB.Exec("SELECT * FROM user WHERE id = ? FOR UPDATE", bvr.user.Row.ID); err != nil {
-        return errors.Wrap(err, "error lock for update")
+    if _, err := bvr.core.DB.Exec(lockUserByIDSQL, bvr.user.Row.ID); err != nil {
+        return errors.Wrapf(err, "error lock for update, sql:%s", lockUserByIDSQL)
     }
 
     exists := true
     ubRow := &row.UserBusiness{}
-    q := "SELECT * FROM user_business WHERE user_id = ? AND business_id = ?"
-    if err := bvr.core.DB.Get(ubRow, q, bvr.user.Row.ID, business.Row.ID); err != nil {
+    if err := bvr.core.DB.Get(ubRow, findUserBusinessSQL, bvr.user.Row.ID, business.Row.ID); err != nil {
         if err == sql.ErrNoRows {
             exists = false
         } else {
-            return errors.Wrap(err, "error find user business")
+            return errors.Wrapf(err, "error find user business, sql:%s", findUserBusinessSQL)
         }
     }
 
@@ -46,19 +53,17 @@ func (bvr *UserBusinessBehavior) BusinessBuy(business *Business) error {
     }
     bvr.user.spendMoney(nextPrice)
 
-    if _, err := bvr.core.DB.Exec("UPDATE user SET money = ? WHERE id = ?", bvr.user.Row.Money, bvr.user.Row.ID); err != nil {
-        return errors.Wrap(err, "error update user data")
+    if _, err := bvr.core.DB.Exec(updateUserMoneySQL, bvr.user.Row.Money, bvr.user.Row.ID); err != nil {
+        return errors.Wrapf(err, "error update user data, sql:%s", updateUserMoneySQL)
     }
 
     if exists {
-        q := "UPDATE user_business SET level = ?, last_buy_at = ? WHERE user_id = ? AND business_id = ?"
-        if _, err := bvr.core.DB.Exec(q, ubRow.Level+1, time.Now(), bvr.user.Row.ID, business.Row.ID); err != nil {
-            return errors.Wrap(err, "error update user data")
+        if _, err := bvr.core.DB.Exec(updateUserBusinessSQL, ubRow.Level+1, time.Now(), bvr.user.Row.ID, business.Row.ID); err != nil {
+            return errors.Wrapf(err, "error update user data, sql:%s", updateUserBusinessSQL)
         }
     } else {
-        q := "INSERT INTO user_business (user_id, business_id, level, last_buy_at) VALUES (?,?,?,?)"
-        if _, err := bvr.core.DB.Exec(q, bvr.user.Row.ID, business.Row.ID, 1, time.Now()); err != nil {
-            return errors.Wrap(err, "error create user business")
+        if _, err := bvr.core.DB.Exec(insertUserBusinessSQL, bvr.user.Row.ID, business.Row.ID, 1, time.Now()); err != nil {
+            return errors.Wrapf(err, "error create user business, sql:%s", insertUserBusinessSQL)
         }
     }
     return nil
