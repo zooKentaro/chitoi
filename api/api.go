@@ -17,9 +17,6 @@ func NewServer() (*http.ServeMux, error) {
     if err != nil {
         return nil, errors.Wrap(err, "error new core")
     }
-    if err := core.LoadMasterdata(); err != nil {
-        return nil, errors.Wrap(err, "error load masterdata")
-    }
 
     userService := service.NewUserService(core)
     userHandler := handler.NewUserServer(handler.NewUserHandler(core, userService))

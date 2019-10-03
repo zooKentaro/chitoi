@@ -216,7 +216,7 @@ func (u *User) RankupMaybe() (bool, error) {
     }
 
     rank := uint32(1)
-    for _, ur := range u.core.Masterdata.UserRanks {
+    for _, ur := range u.core.Masterdata.UserRank.All() {
         if assets < ur.Assets {
             break
         }

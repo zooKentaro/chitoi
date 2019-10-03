@@ -40,8 +40,8 @@ func (u *userService) Signup(req *data.UserSignupRequest) (*data.UserSignupRespo
     return &data.UserSignupResponse{
         User:       user.Row,
         SessionID:  sessionID,
-        Businesses: u.Core.Masterdata.Businesses,
-        UserRanks:  u.Core.Masterdata.UserRanks,
+        Businesses: u.Core.Masterdata.Business.All(),
+        UserRanks:  u.Core.Masterdata.UserRank.All(),
     }, nil
 }
 
@@ -66,8 +66,8 @@ func (u *userService) Login(req *data.UserLoginRequest) (*data.UserLoginResponse
         User:              user.Row,
         SessionID:         sessionID,
         UserBusinesses:    ubRows,
-        Businesses:        u.Core.Masterdata.Businesses,
-        UserRanks:         u.Core.Masterdata.UserRanks,
+        Businesses:        u.Core.Masterdata.Business.All(),
+        UserRanks:         u.Core.Masterdata.UserRank.All(),
         IsTodayFirstLogin: isTodayFirstLogin,
     }, nil
 }
