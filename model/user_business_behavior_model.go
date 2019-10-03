@@ -17,11 +17,25 @@ const (
     updateUserMoneySQL    = "UPDATE user SET money = ? WHERE id = ?"
     updateUserBusinessSQL = "UPDATE user_business SET level = ?, last_buy_at = ? WHERE user_id = ? AND business_id = ?"
     insertUserBusinessSQL = "INSERT INTO user_business (user_id, business_id, level, last_buy_at) VALUES (?,?,?,?)"
+    businessListSQL       = "SELECT * FROM user_business WHERE user_id = ?"
 )
 
 type UserBusinessBehavior struct {
     core *core.Core
     user *User
+}
+
+func (bvr *UserBusinessBehavior) List() ([]*row.UserBusiness, error) {
+    rows := []*row.UserBusiness{}
+    err := bvr.core.DB.Select(&rows, businessListSQL, bvr.user.Row.ID)
+    switch {
+    case err == sql.ErrNoRows:
+        return []*row.UserBusiness{}, nil
+    case err != nil:
+        return nil, errors.Wrapf(err, "error find user business, sql:%s", businessListSQL)
+    default:
+        return rows, nil
+    }
 }
 
 func (bvr *UserBusinessBehavior) Buy(business *Business) error {

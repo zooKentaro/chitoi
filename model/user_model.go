@@ -1,7 +1,6 @@
 package model
 
 import (
-    "database/sql"
     "fmt"
     "time"
 
@@ -18,7 +17,6 @@ const (
     LockForUpdateUserSQL      = "SELECT * FROM user WHERE id = ? FOR UPDATE"
     UpdateUserByLoginSQL      = "UPDATE user SET last_login_at = ?, money = ? WHERE id = ?"
     UpdateUserByFinishGameSQL = "UPDATE user SET stamina = ?, money = ? WHERE id = ?"
-    BusinessListSQL           = "SELECT * FROM user_business WHERE user_id = ?"
     InitialUserName           = ""
     SessionKeyPrefix          = "CHITOI-LOGIN-SESSION"
 )
@@ -96,19 +94,6 @@ func (u *User) Login() (string, bool, error) {
     }
 
     return sessionID, isTodayFirstLogin, nil
-}
-
-func (u *User) BusinessList() ([]*row.UserBusiness, error) {
-    ubRows := []*row.UserBusiness{}
-    err := u.core.DB.Select(&ubRows, BusinessListSQL, u.Row.ID)
-    switch {
-    case err == sql.ErrNoRows:
-        return []*row.UserBusiness{}, nil
-    case err != nil:
-        return nil, errors.Wrap(err, "error find user business")
-    default:
-        return ubRows, nil
-    }
 }
 
 func (u *User) UpdateRecord(bestScore, bestTotalScore uint64) error {

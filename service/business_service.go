@@ -55,7 +55,7 @@ func (s *businessService) Buy(req *data.BusinessBuyRequest) (*data.BusinessBuyRe
         return nil, errors.Wrap(err, "error runkup maybe")
     }
 
-    ubRows, err := user.BusinessList()
+    ubRows, err := user.Business.List()
     if err != nil {
         return nil, errors.Wrap(err, "error user business list")
     }

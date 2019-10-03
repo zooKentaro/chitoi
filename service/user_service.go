@@ -52,7 +52,7 @@ func (u *userService) Login(req *data.UserLoginRequest) (*data.UserLoginResponse
         return nil, errors.Wrapf(err, "error find user by token: %s", req.Token)
     }
 
-    ubRows, err := user.BusinessList()
+    ubRows, err := user.Business.List()
     if err != nil {
         return nil, errors.Wrap(err, "error user business list")
     }
@@ -79,7 +79,7 @@ func (u *userService) Info(req *data.UserInfoRequest) (*data.UserInfoResponse, e
         return nil, errors.Wrap(err, "error authenticate user")
     }
 
-    ubRows, err := user.BusinessList()
+    ubRows, err := user.Business.List()
     if err != nil {
         return nil, errors.Wrap(err, "error user business list")
     }
