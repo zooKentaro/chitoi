@@ -47,7 +47,7 @@ func (s *businessService) Buy(req *data.BusinessBuyRequest) (*data.BusinessBuyRe
         return nil, errors.Wrapf(err, "error find business by id %d", req.BusinessID)
     }
 
-    if err := user.BusinessBuy(business); err != nil {
+    if err := user.Business.Buy(business); err != nil {
         return nil, errors.Wrap(err, "error buy business")
     }
 

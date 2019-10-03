@@ -24,7 +24,7 @@ type UserBusinessBehavior struct {
     user *User
 }
 
-func (bvr *UserBusinessBehavior) BusinessBuy(business *Business) error {
+func (bvr *UserBusinessBehavior) Buy(business *Business) error {
     if err := business.IsOpen(); err != nil {
         return errors.Wrap(err, "error business is open")
     }
