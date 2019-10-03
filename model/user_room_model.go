@@ -17,12 +17,12 @@ const (
     CountValidRoomByCodeSQL = "SELECT count(*) FROM room WHERE code = ? AND expired_at > ?"
 )
 
-type UserRoom struct {
+type UserRoomBehavior struct {
     core *core.Core
     user *User
 }
 
-func (ur *UserRoom) Create() (*Room, error) {
+func (ur *UserRoomBehavior) Create() (*Room, error) {
     roomCode, err := ur.generateRoomCode()
     if err != nil {
         return nil, errors.Wrap(err, "generate room code failed")
@@ -54,14 +54,14 @@ func (ur *UserRoom) Create() (*Room, error) {
 }
 
 // Clean は自身がオーナーである部屋を一掃する
-func (ur *UserRoom) Clean() error {
+func (ur *UserRoomBehavior) Clean() error {
     if _, err := ur.core.DB.Exec(CleanRoomSQL, ur.user.Row.ID); err != nil {
         return errors.Wrapf(err, "error delete room, sql:%s", CleanRoomSQL)
     }
     return nil
 }
 
-func (ur *UserRoom) generateRoomCode() (uint32, error) {
+func (ur *UserRoomBehavior) generateRoomCode() (uint32, error) {
     var (
         retryCount    = uint(10)
         retryInterval = time.Second * 0
