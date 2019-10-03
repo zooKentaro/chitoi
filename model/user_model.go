@@ -98,30 +98,6 @@ func (u *User) Login() (string, bool, error) {
     return sessionID, isTodayFirstLogin, nil
 }
 
-// GameData は1ゲームのデータを扱う
-type GameData struct {
-    Money int64
-}
-
-// GameFinish は1ゲーム終了時の動作を行う
-func (u *User) GameFinish(data *GameData) error {
-    if err := u.exhaustStamina(); err != nil {
-        return errors.Wrap(err, "error exhaust stamina")
-    }
-
-    u.getOrLoseMoney(data.Money)
-
-    if _, err := u.core.DB.Exec(LockForUpdateUserSQL, u.Row.ID); err != nil {
-        return errors.Wrap(err, "error lock for update")
-    }
-
-    if _, err := u.core.DB.Exec(UpdateUserByFinishGameSQL, u.Row.Stamina, u.Row.Money, u.Row.ID); err != nil {
-        return errors.Wrap(err, "error update user data")
-    }
-
-    return nil
-}
-
 func (u *User) BusinessList() ([]*row.UserBusiness, error) {
     ubRows := []*row.UserBusiness{}
     err := u.core.DB.Select(&ubRows, BusinessListSQL, u.Row.ID)

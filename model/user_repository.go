@@ -28,6 +28,7 @@ func NewUser(core *core.Core, row *row.User) *User {
         core: core,
         Row:  row,
     }
+    user.Game = &UserGameBehavior{core, user}
     user.Room = &UserRoomBehavior{core, user}
     user.Business = &UserBusinessBehavior{core, user}
 
@@ -38,6 +39,7 @@ type User struct {
     Row  *row.User
     core *core.Core
 
+    Game     *UserGameBehavior
     Room     *UserRoomBehavior
     Business *UserBusinessBehavior
 }

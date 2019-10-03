@@ -33,7 +33,7 @@ func (s *gameService) Finish(req *data.GameFinishRequest) (*data.GameFinishRespo
         Money: req.Money,
     }
 
-    if err := user.GameFinish(gd); err != nil {
+    if err := user.Game.Finish(gd); err != nil {
         return nil, errors.Wrapf(err, "error game finish, game data %+v", gd)
     }
 
