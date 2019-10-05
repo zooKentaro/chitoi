@@ -33,6 +33,22 @@ CREATE TABLE `business` (
 ) ENGINE=InnoDB DEFAULT CHARACTER SET utf8mb4;
 
 
+DROP TABLE IF EXISTS `contact`;
+
+CREATE TABLE `contact` (
+    `id` BIGINT unsigned NOT NULL AUTO_INCREMENT,
+    `user_id` BIGINT unsigned NOT NULL,
+    `body` VARCHAR(191) NOT NULL,
+    `status` INTEGER unsigned NOT NULL,
+    `note` VARCHAR(191) NOT NULL,
+    `created_at` DATETIME NOT NULL,
+    `updated_at` DATETIME NOT NULL,
+    `deleted_at` DATETIME NULL,
+    INDEX `user_id_idx` (`user_id`),
+    PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARACTER SET utf8mb4;
+
+
 DROP TABLE IF EXISTS `user`;
 
 CREATE TABLE `user` (
